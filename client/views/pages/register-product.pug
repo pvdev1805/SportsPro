@@ -1,0 +1,39 @@
+extends ../layouts/default.pug
+
+block content
+  .main-panel.small-panel
+    .header-section
+      h2 Customer Login
+      a(href="/") Home
+    // Login Form
+    .login-panel.mb-4
+      p You must login before you can register a product.
+      .form-group
+        label(for="email") Email:
+        input#email(
+          placeholder="Enter your email"
+          name="email"
+          type="email"
+          )
+      button.btn.btn-primary.full-width Login
+    // Registration Form (Initially hidden - shown after login)
+    .registration-panel.mb-4.hidden
+      h3 Register Product
+      .customer-info.mb-2
+        p
+          | Customer:
+          span.customer-name David Thompson
+      .form-group
+        label(for="product") Product:
+        select#product(name="product")
+          option(value="") -- Select a Product --
+          option(value="DRAFT10") Draft Manager 1.0
+          option(value="LEAG10") League Scheduler 1.0
+          option(value="TEAM10") Team Manager Version 1.0
+          // Additional products to be added by students
+      button.btn.btn-primary.full-width Register Product
+    // Confirmation Message (Initially hidden - shown after registration)
+    .success-panel.hidden
+      .alert.alert-success
+        p Product (TEAM10) was registered successfully.
+      button.btn.btn-primary.full-width Register Another Product

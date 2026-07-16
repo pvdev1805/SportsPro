@@ -21,4 +21,28 @@ app.get('/', (req, res) => {
   })
 })
 
+app.get('/products', (req, res) => {
+  res.render('pages/products', {
+    title: 'Manage Products'
+  })
+})
+
+app.get('/technicians', (req, res) => {
+  res.render('pages/technicians', {
+    title: 'Manage Technicians'
+  })
+})
+
+app.get('/customers', (req, res) => {
+  res.render('pages/customers', {
+    title: 'Manage Customers'
+  })
+})
+
+app.get('/register-product', (req, res) => {
+  res.render('pages/register-product', {
+    title: 'Register Product'
+  })
+})
+
 export default app

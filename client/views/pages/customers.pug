@@ -1,0 +1,123 @@
+extends ../layouts/default.pug
+
+block content
+  .main-panel
+    .header-section
+      h2 Customer Search
+      a(href="/") Home
+
+    // Search Form
+    .search-panel.mb-4
+      .form-group
+        label(for="lastName") Last Name:
+        .search-row
+          input#lastName(
+            placeholder="Enter last name"
+            name="lastName"
+            type="text"
+            )
+          button.btn.btn-primary Search
+
+    // Search Results
+    .results-panel.mb-4
+      h3 Results
+      .table-container
+        table
+          thead
+            tr
+              th Name
+              th Email
+              th Phone
+              th Action
+          tbody
+            // Sample customer data - students will replace with dynamic data
+            tr
+              td David Thompson
+              td david@example.com
+              td 212-555-1212
+              td
+                button.btn.btn-primary View/Edit
+
+    // Customer Edit Form (Initially hidden - would be shown when View/Edit is clicked)
+    .form-panel
+      h3 View/Update Customer
+      .form-row
+        .form-group
+          label(for="firstName") First Name:
+          input#firstName(
+            value="David"
+            name="firstName"
+            type="text"
+            )
+        .form-group
+          label(for="editLastName") Last Name:
+          input#editLastName(
+            value="Thompson"
+            name="editLastName"
+            type="text"
+            )
+      .form-group
+        label(for="address") Address:
+        input#address(
+          value="123 Main St"
+          name="address"
+          type="text"
+          )
+      .form-row
+        .form-group
+          label(for="city") City:
+          input#city(
+            value="New York"
+            name="city"
+            type="text"
+            )
+        .form-group
+          label(for="state") State:
+          input#state(
+            value="NY"
+            name="state"
+            type="text"
+            )
+        .form-group
+          label(for="postalCode") Postal Code:
+          input#postalCode(
+            value="10001"
+            name="postalCode"
+            type="text"
+            )
+      .form-row
+        .form-group
+          label(for="country") Country:
+          select#country(name="country")
+            option(
+              selected=""
+              value="US"
+              ) United States
+            option(value="CA") Canada
+            option(value="MX") Mexico
+            // Additional countries to be added by students
+        .form-group
+          label(for="phone") Phone:
+          input#phone(
+            value="212-555-1212"
+            name="phone"
+            type="tel"
+            )
+      .form-row
+        .form-group
+          label(for="email") Email:
+          input#email(
+            value="david@example.com"
+            name="email"
+            type="email"
+            )
+        .form-group
+          label(for="password") Password:
+          input#password(
+            value="********"
+            name="password"
+            type="password"
+            )
+      .button-group
+        button.btn.btn-primary Update Customer
+        button.btn.btn-secondary Cancel
