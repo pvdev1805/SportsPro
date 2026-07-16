@@ -1,0 +1,23 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(
+      content="width=device-width, initial-scale=1.0"
+      name="viewport"
+      )
+    title #{title ? title + ' - ' : ''}SportsPro Technical Support
+    link(
+      href="css/main.css"
+      rel="stylesheet"
+      )
+  body
+    // Header
+    include ../partials/header.pug
+
+    // Main Content
+    main.container
+      block content
+
+    // Footer
+    include ../partials/footer.pug

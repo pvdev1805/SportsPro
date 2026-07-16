@@ -16,8 +16,8 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
-  res.render('index', {
-    title: 'SportsPro Technical Support'
+  res.render('pages/home', {
+    title: 'Home'
   })
 })
 
