@@ -45,4 +45,28 @@ app.get('/register-product', (req, res) => {
   })
 })
 
+app.get('/incidents/create', (req, res) => {
+  res.render('pages/incidents/create', {
+    title: 'Create Incident'
+  })
+})
+
+app.get('/incidents/assign', (req, res) => {
+  res.render('pages/incidents/assign', {
+    title: 'Assign Incident'
+  })
+})
+
+app.get('/incidents/update', (req, res) => {
+  res.render('pages/incidents/update', {
+    title: 'Update Incident'
+  })
+})
+
+app.get('/incidents', (req, res) => {
+  res.render('pages/incidents/display', {
+    title: 'Display Incidents'
+  })
+})
+
 export default app

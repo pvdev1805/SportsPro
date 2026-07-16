@@ -1,0 +1,74 @@
+extends ../../layouts/default.pug
+
+block content
+  .main-panel
+    .header-section
+      h2 Assign Incident
+      a(href="index.html") Home
+
+    // Unassigned Incidents List
+    .incidents-panel.mb-4
+      h3 Select Incident
+      .table-container
+        table
+          thead
+            tr
+              th ID
+              th Customer
+              th Product
+              th Date Opened
+              th Title
+              th Action
+          tbody
+            // Sample incident data - students will replace with dynamic data
+            tr
+              td 1
+              td David Thompson
+              td LEAG10
+              td 2023-03-15
+              td Error importing data
+              td
+                button.btn.btn-primary(type="button") Select
+            tr
+              td 3
+              td Michael Chen
+              td TEAM10
+              td 2023-03-20
+              td Report generation failure
+              td
+                button.btn.btn-primary(type="button") Select
+
+    // Incident Assignment Form (Initially hidden - shown after selecting an incident)
+    .assignment-panel
+      h3 Assign to Technician
+      .incident-details.mb-4
+        .detail-row
+          .detail-label Incident ID:
+          .detail-value 3
+        .detail-row
+          .detail-label Customer:
+          .detail-value Michael Chen
+        .detail-row
+          .detail-label Product:
+          .detail-value TEAM10 (Team Manager Version 1.0)
+        .detail-row
+          .detail-label Date Opened:
+          .detail-value 2023-03-20
+        .detail-row
+          .detail-label Title:
+          .detail-value Report generation failure
+        .detail-row.full-width
+          .detail-label Description:
+          .detail-value.description-box
+            | Unable to generate end-of-season statistics report. The application crashes when attempting to run reports.
+      .form-group
+        label(for="technician") Technician:
+        select#technician(name="technician")
+          option(value="") -- Select a Technician --
+          option(value="1") John Doe (john.doe@sportspro.com)
+          option(value="2") Jane Smith (jane.smith@sportspro.com)
+          option(value="3") Mike Johnson (mike.johnson@sportspro.com)
+          // Additional technicians to be added by students
+      .button-group
+        button.btn.btn-primary(type="submit") Assign Incident
+        button.btn.btn-secondary(type="button") Cancel
