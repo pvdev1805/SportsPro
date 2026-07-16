@@ -1,0 +1,27 @@
+{
+  "name": "sportspro",
+  "version": "1.0.0",
+  "description": "This repository contains the SportsPro Technical Support project.",
+  "main": "index.js",
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "eslint": "eslint .",
+    "eslint:fix": "eslint --fix ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitea.usq.edu.au/U1153426/SportsPro.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.7.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.7.0",
+    "prettier": "^3.9.5"
+  }
+}
