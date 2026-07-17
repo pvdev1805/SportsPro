@@ -1,0 +1,108 @@
+extends ../../layouts/default.pug
+
+block content
+  .main-panel
+    .header-section
+      h2 Display Incidents
+      a(href="/") Home
+    // Filter Options
+    .filter-panel.mb-4
+      h3 Filter Incidents
+      .form-row
+        .form-group
+          label(for="technician") Technician:
+          select#technician(name="technician")
+            option(value="") All Technicians
+            option(value="1") John Doe
+            option(value="2") Jane Smith
+            option(value="3") Mike Johnson
+            // Additional technicians to be added by students
+        .form-group
+          label(for="customer") Customer:
+          select#customer(name="customer")
+            option(value="") All Customers
+            option(value="1") David Thompson
+            option(value="2") Sarah Garcia
+            option(value="3") Michael Chen
+            // Additional customers to be added by students
+        .form-group
+          label(for="product") Product:
+          select#product(name="product")
+            option(value="") All Products
+            option(value="DRAFT10") Draft Manager 1.0
+            option(value="LEAG10") League Scheduler 1.0
+            option(value="TEAM10") Team Manager Version 1.0
+            // Additional products to be added by students
+        .form-group
+          label(for="status") Status:
+          select#status(name="status")
+            option(value="") All Statuses
+            option(value="open") Open
+            option(value="closed") Closed
+      button.btn.btn-primary(type="button") Apply Filters
+    // Incidents Table
+    .incidents-panel.mb-4
+      h3 Incidents
+      .table-container
+        table
+          thead
+            tr
+              th ID
+              th Customer
+              th Product
+              th Technician
+              th Date Opened
+              th Date Closed
+              th Title
+          tbody
+            // Sample incident data - students will replace with dynamic data
+            tr
+              td 1
+              td David Thompson
+              td LEAG10
+              td John Doe
+              td 2023-03-15
+              td
+              td Error importing data
+            tr
+              td 2
+              td Sarah Garcia
+              td DRAFT10
+              td Jane Smith
+              td 2023-03-16
+              td 2023-03-18
+              td Program crashes on startup
+            tr
+              td 3
+              td Michael Chen
+              td TEAM10
+              td Mike Johnson
+              td 2023-03-20
+              td
+              td Report generation failure
+    // Incident Details (Initially hidden - shown when incident is selected)
+    .incident-details-panel
+      h3 Incident #3 Details
+      .incident-details
+        .detail-row
+          .detail-label Customer:
+          .detail-value Michael Chen (michael@example.com)
+        .detail-row
+          .detail-label Product:
+          .detail-value TEAM10 (Team Manager Version 1.0)
+        .detail-row
+          .detail-label Technician:
+          .detail-value Mike Johnson (mike.johnson@sportspro.com)
+        .detail-row
+          .detail-label Date Opened:
+          .detail-value 2023-03-20
+        .detail-row
+          .detail-label Date Closed:
+          .detail-value -
+        .detail-row
+          .detail-label Title:
+          .detail-value Report generation failure
+        .detail-row.full-width
+          .detail-label Description:
+          .detail-value.description-box
+            | Unable to generate end-of-season statistics report. The application crashes when attempting to run reports. Customer has tried reinstalling the application without success. Issue occurs on both Windows 10 and 11 machines.

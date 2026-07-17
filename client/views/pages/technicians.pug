@@ -1,0 +1,69 @@
+extends ../layouts/default.pug
+
+block content
+  .main-panel
+    .header-section
+      h2 Technician List
+      a(href="/") Home
+
+    // Technicians Table
+    .table-container.mb-4
+      table
+        thead
+          tr
+            th First Name
+            th Last Name
+            th Email
+            th Phone
+            th Action
+        tbody
+          // Sample technician data - students will replace with dynamic data
+          tr
+            td John
+            td Doe
+            td john.doe@sportspro.com
+            td 800-555-0443
+            td
+              button.btn.btn-danger Delete
+          tr
+            td Jane
+            td Smith
+            td jane.smith@sportspro.com
+            td 800-555-0459
+            td
+              button.btn.btn-danger Delete
+
+    // Add Technician Form
+    .form-panel
+      h3 Add Technician
+      .form-group
+        label(for="firstName") First Name:
+        input#firstName(
+          name="firstName"
+          type="text"
+          )
+      .form-group
+        label(for="lastName") Last Name:
+        input#lastName(
+          name="lastName"
+          type="text"
+          )
+      .form-group
+        label(for="email") Email:
+        input#email(
+          name="email"
+          type="email"
+          )
+      .form-group
+        label(for="phone") Phone:
+        input#phone(
+          name="phone"
+          type="tel"
+          )
+      .form-group
+        label(for="password") Password:
+        input#password(
+          name="password"
+          type="password"
+          )
+      button.btn.btn-primary(type="submit") Add Technician
