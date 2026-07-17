@@ -1,0 +1,15 @@
+product_code,name,version,release_date
+DRAFT10,Draft Manager,1.0,2024-01-15
+LEAG10,League Scheduler,1.0,2024-02-20
+TEAM10,Team Manager,1.0,2024-03-10
+STAT10,Stats Tracker,1.0,2024-04-05
+COAC10,Coach Assistant,1.0,2024-04-28
+TRAIN10,Training Planner,1.0,2024-05-14
+SCOUT10,Scout Analyzer,1.0,2024-06-02
+MEDI10,Medical Log,1.0,2024-06-21
+BUDG10,Budget Manager,1.0,2024-07-09
+EVENT10,Event Coordinator,1.0,2024-07-30
+ANLY10,Performance Analytics,1.0,2024-08-16
+RECR10,Recruitment Hub,1.0,2024-09-03
+PLAY10,Playbook Designer,1.0,2024-09-25
+TOURN10,Tournament Organizer,1.0,2024-10-12

@@ -1,0 +1,13 @@
+incident_id,customer_id,product_code,tech_id,date_opened,date_closed,title,description
+1,1,DRAFT10,1,2026-05-15 09:00:00,2026-05-16 14:30:00,Unable to create draft,The application displays an error when the customer creates a new draft.
+2,1,LEAG10,2,2026-05-20 11:15:00,,Team schedule not loading,The league schedule page remains blank after the customer signs in.
+3,2,LEAG10,2,2026-05-22 10:30:00,2026-05-23 15:45:00,Schedule changes not saved,Updates to the league schedule are lost after saving.
+4,2,STAT10,3,2026-05-25 13:20:00,,Statistics report is incomplete,The generated statistics report does not include the latest match results.
+5,3,TEAM10,,2026-06-01 08:45:00,,Unable to add team member,The customer receives a validation error when adding a new team member.
+6,3,TRAIN10,4,2026-06-03 14:10:00,2026-06-04 09:25:00,Training session duplicated,A training session appears twice after the calendar is refreshed.
+7,4,COAC10,1,2026-06-05 10:00:00,,Player notes not updating,Changes made to player notes are not displayed on the dashboard.
+8,5,BUDG10,5,2026-06-08 15:35:00,,Incorrect budget total,The displayed budget total does not match the sum of recorded expenses.
+9,6,SCOUT10,,2026-06-10 09:50:00,,Scout report export failed,The customer cannot export the scout analysis report as a PDF file.
+10,7,RECR10,3,2026-06-12 12:40:00,2026-06-13 16:10:00,Candidate search returns no results,The recruitment search returns no candidates when valid filters are selected.
+11,8,MEDI10,4,2026-06-15 08:20:00,,Medical record attachment missing,An uploaded attachment is not visible after the medical record is saved.
+12,8,TEAM10,5,2026-06-17 13:15:00,,Login session expires early,The customer is signed out shortly after opening the team management page.

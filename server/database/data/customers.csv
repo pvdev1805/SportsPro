@@ -1,0 +1,9 @@
+customer_id,first_name,last_name,address,city,state,postal_code,country_code,phone,email,password
+1,Ethan,Walker,123 Main Street,Sydney,NSW,2000,AU,0412345678,ethan.walker@example.com,CustomerPass123!
+2,Chloe,Bennett,456 Collins Street,Melbourne,VIC,3000,AU,0412345679,chloe.bennett@example.com,CustomerPass123!
+3,Liam,Carter,78 Adelaide Street,Brisbane,QLD,4000,AU,0412345680,liam.carter@example.com,CustomerPass123!
+4,Grace,Thompson,91 Hay Street,Perth,WA,6000,AU,0412345681,grace.thompson@example.com,CustomerPass123!
+5,Daniel,Roberts,24 King William Street,Adelaide,SA,5000,AU,0412345682,daniel.roberts@example.com,CustomerPass123!
+6,Olivia,Martin,150 Queen Street,Auckland,Auckland,1010,NZ,+64211234567,olivia.martin@example.com,CustomerPass123!
+7,Noah,Anderson,350 Fifth Avenue,New York,NY,10118,US,+12125550142,noah.anderson@example.com,CustomerPass123!
+8,Emma,Clarke,20 King Street,Manchester,England,M21AA,GB,+447700900123,emma.clarke@example.com,CustomerPass123!
