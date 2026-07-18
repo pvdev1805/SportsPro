@@ -1,0 +1,30 @@
+name: sportspro
+
+services:
+  database:
+    image: postgres:18
+    container_name: sportspro-database
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: sportspro
+      POSTGRES_USER: sportspro_user
+      POSTGRES_PASSWORD: sportspro_password
+
+    ports:
+      - '5433:5432'
+
+    volumes:
+      - sportspro_database_data:/var/lib/postgresql
+      - ./server/database:/docker-entrypoint-initdb.d:ro
+
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U sportspro_user -d sportspro']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  sportspro_database_data:
+    name: sportspro_database_data
