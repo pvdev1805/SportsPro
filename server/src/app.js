@@ -3,6 +3,8 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import routes from './routes/index.routes.js'
+import notFoundMiddleware from './middlewares/not-found.middleware.js'
+import errorMiddleware from './middlewares/error.middleware.js'
 
 const app = express()
 
@@ -18,5 +20,8 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.use('/', routes)
+
+app.use(notFoundMiddleware)
+app.use(errorMiddleware)
 
 export default app
