@@ -10,7 +10,7 @@ const handleDeleteProduct = async (event) => {
 
   const productCode = deleteButton.dataset.productCode
 
-  const confirmed = await confirmDelete(productCode)
+  const confirmed = await confirmDelete({ itemLabel: 'Product', itemName: productCode })
 
   if (!confirmed) {
     return

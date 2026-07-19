@@ -1,0 +1,17 @@
+extends ../layouts/default.pug
+
+include ../mixins/technician-form.pug
+
+block content
+  .main-panel
+    .form-panel
+      h3 Edit Technician
+
+      form#technician-edit-form(data-technician-id=technician.techId)
+        +technicianForm(technician)
+
+        button.btn.btn-primary(type="submit") Save Changes
+        a.btn(href="/technicians") Cancel
+
+block scripts
+  script(src="/js/technician-edit.js" type="module")

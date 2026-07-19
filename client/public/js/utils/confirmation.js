@@ -1,7 +1,7 @@
-export const confirmDelete = async (productCode) => {
+export const confirmDelete = async ({ itemLabel, itemName = '' }) => {
   const result = await window.Swal.fire({
-    title: 'Delete Product',
-    text: `Are you sure you want to delete ${productCode}?`,
+    title: `Delete ${itemLabel}`,
+    text: `Are you sure you want to delete ${itemName}?`,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#d33',

@@ -1,0 +1,17 @@
+extends ../layouts/default.pug
+
+include ../mixins/technician-form.pug
+
+block content
+  .main-panel
+    .form-panel
+      h3 Add Technician
+
+      form#technician-create-form
+        +technicianForm({})
+
+        button.btn.btn-primary(type="submit") Add Technician
+        a.btn.btn-danger(href="/technicians") Cancel
+
+block scripts
+  script(src="/js/technician-create.js" type="module")
