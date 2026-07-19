@@ -1,24 +1,7 @@
+import { apiRequest } from './utils/api.js'
 import { setFlashNotification, showError } from './utils/notification.js'
 
 const productEditForm = document.querySelector('#product-edit-form')
-
-const editProduct = async (productCode, productData) => {
-  const response = await fetch(`/api/products/${productCode}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(productData)
-  })
-
-  const result = await response.json()
-
-  if (!response.ok) {
-    throw new Error(result.error?.message || result.message || 'Failed to update product')
-  }
-
-  return result.data
-}
 
 const handleEditProduct = async (event) => {
   event.preventDefault()
@@ -34,7 +17,17 @@ const handleEditProduct = async (event) => {
   }
 
   try {
-    await editProduct(productCode, productData)
+    await apiRequest(
+      `/api/products/${productCode}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(productData)
+      },
+      'Failed to update product'
+    )
 
     setFlashNotification('success', `Product "${productCode}" was updated successfully!`)
 

@@ -1,24 +1,7 @@
+import { apiRequest } from './utils/api.js'
 import { setFlashNotification, showError } from './utils/notification.js'
 
 const productCreateForm = document.querySelector('#product-create-form')
-
-const createProduct = async (productData) => {
-  const response = await fetch('/api/products', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(productData)
-  })
-
-  const result = await response.json()
-
-  if (!response.ok) {
-    throw new Error(result.error?.message || result.message || 'Failed to create product')
-  }
-
-  return result.data
-}
 
 const handleCreateProduct = async (event) => {
   event.preventDefault()
@@ -33,7 +16,17 @@ const handleCreateProduct = async (event) => {
   }
 
   try {
-    await createProduct(productData)
+    await apiRequest(
+      '/api/products',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(productData)
+      },
+      'Failed to create product'
+    )
 
     setFlashNotification('success', `Product "${productData.productCode}" was created successfully!`)
 
