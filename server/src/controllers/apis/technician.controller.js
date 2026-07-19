@@ -54,10 +54,11 @@ export const updateTechnician = async (req, res) => {
 export const deleteTechnician = async (req, res) => {
   const { techId } = req.params
 
-  await technicianService.deleteTechnician(techId)
+  const technician = await technicianService.deleteTechnician(techId)
 
   res.status(200).json({
     success: true,
-    message: 'Technician deleted successfully'
+    message: 'Technician deleted successfully',
+    data: technician
   })
 }

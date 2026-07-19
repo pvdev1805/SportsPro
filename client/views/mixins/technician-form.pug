@@ -1,0 +1,46 @@
+mixin technicianForm(technician = {})
+  .form-group
+    label(for="firstName") First Name:
+    input#firstName(
+      name="firstName"
+      type="text"
+      maxlength="50"
+      value=technician.firstName || ''
+      required
+      )
+  .form-group
+    label(for="lastName") Last Name:
+    input#lastName(
+      name="lastName"
+      type="text"
+      maxlength="50"
+      value=technician.lastName || ''
+      required
+      )
+  .form-group
+    label(for="email") Email:
+    input#email(
+      name="email"
+      type="email"
+      maxlength="100"
+      value=technician.email || ''
+      required
+      )
+  .form-group
+    label(for="phone") Phone:
+    input#phone(
+      name="phone"
+      type="tel"
+      maxlength="20"
+      value=technician.phone || ''
+      required
+      )
+  .form-group
+    label(for="password") Password:
+    input#password(
+      name="password"
+      type="password"
+      maxlength="100"
+      value=technician.password || ''
+      required
+      )
