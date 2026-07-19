@@ -12,7 +12,7 @@ export const getAllCustomers = async (req, res) => {
 
 // GET /api/customers/search?lastName=...
 export const searchCustomers = async (req, res) => {
-  const { lastName } = req.query
+  const { lastName = '' } = req.query
 
   const customers = await customerService.searchCustomersByLastName(lastName.trim())
 
@@ -51,9 +51,9 @@ export const updateCustomer = async (req, res) => {
 
 // POST /api/customers/login
 export const loginCustomer = async (req, res) => {
-  const { email } = req.body
+  const { email = '' } = req.body
 
-  const customer = await customerService.loginCustomer(email)
+  const customer = await customerService.loginCustomer(email.trim())
 
   res.status(200).json({
     success: true,

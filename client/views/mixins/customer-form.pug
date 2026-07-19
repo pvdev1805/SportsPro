@@ -1,0 +1,95 @@
+mixin customerForm(customer = {}, countries = [])
+  .form-row
+    .form-group
+      label(for="firstName") First Name:
+      input#firstName(
+        name="firstName"
+        type="text"
+        maxlength="50"
+        value=customer.firstName || ''
+        required
+        )
+    .form-group
+      label(for="lastName") Last Name:
+      input#lastName(
+        name="lastName"
+        type="text"
+        maxlength="50"
+        value=customer.lastName || ''
+        required
+        )
+  .form-group
+    label(for="address") Address:
+    input#address(
+      name="address"
+      type="text"
+      maxlength="50"
+      value=customer.address || ''
+      required
+      )
+  .form-row
+    .form-group
+      label(for="city") City:
+      input#city(
+        name="city"
+        type="text"
+        maxlength="50"
+        value=customer.city || ''
+        required
+        )
+    .form-group
+      label(for="state") State:
+      input#state(
+        name="state"
+        type="text"
+        maxlength="50"
+        value=customer.state || ''
+        required
+        )
+    .form-group
+      label(for="postalCode") Postal Code:
+      input#postalCode(
+        name="postalCode"
+        type="text"
+        maxlength="20"
+        value=customer.postalCode || ''
+        required
+        )
+  .form-row
+    .form-group
+      label(for="countryCode") Country:
+      select#countryCode(name="countryCode")
+        each country in countries
+          option(
+            value=country.countryCode
+            selected=`${customer.countryCode === country.countryCode ? 'selected' : ''}`
+            ) #{country.countryName}
+    .form-group
+      label(for="phone") Phone:
+      input#phone(
+        name="phone"
+        type="tel"
+        maxlength="20"
+        value=customer.phone || ''
+        required
+        )
+  .form-row
+    .form-group
+      label(for="email") Email:
+      input#email(
+        name="email"
+        type="email"
+        maxlength="100"
+        value=customer.email || ''
+        required
+        )
+    .form-group
+      label(for="password") Password:
+      input#password(
+        name="password"
+        type="password"
+        maxlength="100"
+        value=customer.password || ''
+        required
+        )
+
