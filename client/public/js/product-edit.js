@@ -1,3 +1,4 @@
+import { API_ROUTES, PAGE_ROUTES } from './constants/routes.js'
 import { apiRequest } from './utils/api.js'
 import { setFlashNotification, showError } from './utils/notification.js'
 
@@ -18,7 +19,7 @@ const handleEditProduct = async (event) => {
 
   try {
     await apiRequest(
-      `/api/products/${productCode}`,
+      `${API_ROUTES.PRODUCTS}/${productCode}`,
       {
         method: 'PUT',
         headers: {
@@ -31,7 +32,7 @@ const handleEditProduct = async (event) => {
 
     setFlashNotification('success', `Product "${productCode}" was updated successfully!`)
 
-    window.location.href = '/products'
+    window.location.href = PAGE_ROUTES.PRODUCTS
   } catch (error) {
     console.error('Error editing product:', error)
     showError(error.message)

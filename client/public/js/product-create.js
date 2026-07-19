@@ -1,3 +1,4 @@
+import { API_ROUTES, PAGE_ROUTES } from './constants/routes.js'
 import { apiRequest } from './utils/api.js'
 import { setFlashNotification, showError } from './utils/notification.js'
 
@@ -17,7 +18,7 @@ const handleCreateProduct = async (event) => {
 
   try {
     await apiRequest(
-      '/api/products',
+      API_ROUTES.PRODUCTS,
       {
         method: 'POST',
         headers: {
@@ -30,7 +31,7 @@ const handleCreateProduct = async (event) => {
 
     setFlashNotification('success', `Product "${productData.productCode}" was created successfully!`)
 
-    window.location.href = '/products'
+    window.location.href = PAGE_ROUTES.PRODUCTS
   } catch (error) {
     console.error('Error creating product:', error)
     showError(error.message)

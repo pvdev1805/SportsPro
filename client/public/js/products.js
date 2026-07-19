@@ -1,3 +1,4 @@
+import { API_ROUTES } from './constants/routes.js'
 import { apiRequest } from './utils/api.js'
 import { confirmDelete } from './utils/confirmation.js'
 import { setFlashNotification, showError, showFlashNotification } from './utils/notification.js'
@@ -19,7 +20,7 @@ const handleDeleteProduct = async (event) => {
     deleteButton.disabled = true
 
     await apiRequest(
-      `/api/products/${productCode}`,
+      `${API_ROUTES.PRODUCTS}/${productCode}`,
       {
         method: 'DELETE'
       },
