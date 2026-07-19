@@ -5,9 +5,9 @@ import asyncHandler from '../../utils/async-handler.js'
 const router = Router()
 
 router.get('/', asyncHandler(technicianController.getAllTechnicians))
-router.get('/:id', asyncHandler(technicianController.getTechnicianById))
+router.get('/:techId', asyncHandler(technicianController.getTechnicianById))
 router.post('/', asyncHandler(technicianController.createTechnician))
-router.put('/:id', asyncHandler(technicianController.updateTechnician))
-router.delete('/:id', asyncHandler(technicianController.deleteTechnician))
+router.put('/:techId', asyncHandler(technicianController.updateTechnician))
+router.delete('/:techId', asyncHandler(technicianController.deleteTechnician))
 
 export default router

@@ -60,6 +60,8 @@ const deleteTechnician = async (techId) => {
   const technician = await getTechnicianById(techId)
 
   await technician.destroy()
+
+  return technician
 }
 
 const technicianService = {
