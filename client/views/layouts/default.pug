@@ -8,6 +8,14 @@ html(lang="en")
       )
     title #{title ? title + ' - ' : ''}SportsPro Technical Support
     link(
+      href="/libs/notyf/notyf.min.css"
+      rel="stylesheet"
+      )
+    link(
+      href="/libs/sweetalert2/sweetalert2.min.css"
+      rel="stylesheet"
+      )
+    link(
       href="/css/main.css"
       rel="stylesheet"
       )
@@ -21,3 +29,9 @@ html(lang="en")
 
     // Footer
     include ../partials/footer.pug
+
+    //- Scripts
+    script(src="/libs/notyf/notyf.min.js")
+    script(src="/libs/sweetalert2/sweetalert2.min.js")
+
+    block scripts
