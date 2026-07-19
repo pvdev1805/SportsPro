@@ -1,0 +1,14 @@
+include ../mixins/product-form.pug
+
+extends ../layouts/default.pug
+
+block content
+  .main-panel
+    .form-panel
+      h3 Edit Product
+
+      form#product-edit-form(data-product-code=product.productCode)
+        +productForm(product, true)
+
+        button.btn.btn-primary(type="submit") Save Changes
+        a.btn(href="/products") Cancel

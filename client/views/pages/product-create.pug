@@ -1,0 +1,13 @@
+include ../mixins/product-form.pug
+
+extends ../layouts/default.pug
+
+block content
+  .main-panel
+    .form-panel
+      h3 Add Product
+
+      form#product-create-form
+        +productForm({}, false)
+
+        button.btn.btn-primary(type="submit") Add Product
