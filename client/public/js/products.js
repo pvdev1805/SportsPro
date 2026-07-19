@@ -1,3 +1,6 @@
+import { confirmDelete } from './utils/confirmation.js'
+import { setFlashNotification, showError, showFlashNotification } from './utils/notification.js'
+
 const deleteButtons = document.querySelectorAll('.product-delete-button')
 
 const deleteProduct = async (productCode) => {
@@ -19,18 +22,21 @@ const handleDeleteProduct = async (event) => {
 
   const productCode = deleteButton.dataset.productCode
 
-  const confirmed = window.confirm(`Are you sure you want to delete product with code "${productCode}"?`)
+  const confirmed = await confirmDelete(productCode)
 
   if (!confirmed) {
     return
   }
 
   try {
+    deleteButton.disabled = true
     await deleteProduct(productCode)
+    setFlashNotification('success', `Product "${productCode}" was deleted successfully!`)
     window.location.reload()
   } catch (error) {
+    deleteButton.disabled = false
     console.error('Error deleting product:', error)
-    window.alert(`Error deleting product: ${error.message}`)
+    showError(error.message)
   }
 }
 
@@ -39,3 +45,5 @@ if (deleteButtons) {
     button.addEventListener('click', handleDeleteProduct)
   })
 }
+
+showFlashNotification()

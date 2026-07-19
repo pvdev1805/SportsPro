@@ -1,3 +1,5 @@
+import { setFlashNotification, showError } from './utils/notification.js'
+
 const productCreateForm = document.querySelector('#product-create-form')
 
 const createProduct = async (productData) => {
@@ -33,10 +35,12 @@ const handleCreateProduct = async (event) => {
   try {
     await createProduct(productData)
 
+    setFlashNotification('success', `Product "${productData.productCode}" was created successfully!`)
+
     window.location.href = '/products'
   } catch (error) {
     console.error('Error creating product:', error)
-    window.alert(`Error creating product: ${error.message}`)
+    showError(error.message)
   }
 }
 

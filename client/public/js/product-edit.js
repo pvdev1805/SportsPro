@@ -1,3 +1,5 @@
+import { setFlashNotification, showError } from './utils/notification.js'
+
 const productEditForm = document.querySelector('#product-edit-form')
 
 const editProduct = async (productCode, productData) => {
@@ -34,10 +36,12 @@ const handleEditProduct = async (event) => {
   try {
     await editProduct(productCode, productData)
 
+    setFlashNotification('success', `Product "${productCode}" was updated successfully!`)
+
     window.location.href = '/products'
   } catch (error) {
     console.error('Error editing product:', error)
-    window.alert(`Error editing product: ${error.message}`)
+    showError(error.message)
   }
 }
 
