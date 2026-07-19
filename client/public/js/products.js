@@ -1,45 +1,41 @@
-const productCreateForm = document.querySelector('#product-create-form')
+const deleteButtons = document.querySelectorAll('.product-delete-button')
 
-const createProduct = async (productData) => {
-  const response = await fetch('/api/products', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(productData)
+const deleteProduct = async (productCode) => {
+  const response = await fetch(`/api/products/${productCode}`, {
+    method: 'DELETE'
   })
 
   const result = await response.json()
 
   if (!response.ok) {
-    throw new Error(result.error?.message || result.message || 'Failed to create product')
+    throw new Error(result.error?.message || result.message || 'Failed to delete product')
   }
 
-  return result.data
+  return result
 }
 
-const handleCreateProduct = async (event) => {
-  event.preventDefault()
+const handleDeleteProduct = async (event) => {
+  const deleteButton = event.currentTarget
 
-  const formData = new FormData(productCreateForm)
+  const productCode = deleteButton.dataset.productCode
 
-  const productData = {
-    productCode: formData.get('productCode').trim(),
-    name: formData.get('name').trim(),
-    version: Number(formData.get('version')),
-    releaseDate: formData.get('releaseDate')
+  const confirmed = window.confirm(`Are you sure you want to delete product with code "${productCode}"?`)
+
+  if (!confirmed) {
+    return
   }
 
   try {
-    await createProduct(productData)
-
-    window.location.href = '/products'
+    await deleteProduct(productCode)
+    window.location.reload()
   } catch (error) {
-    console.error('Error creating product:', error)
-    window.alert(`Error creating product: ${error.message}`)
+    console.error('Error deleting product:', error)
+    window.alert(`Error deleting product: ${error.message}`)
   }
 }
 
-if (productCreateForm) {
-  productCreateForm.addEventListener('submit', handleCreateProduct)
+if (deleteButtons) {
+  deleteButtons.forEach((button) => {
+    button.addEventListener('click', handleDeleteProduct)
+  })
 }

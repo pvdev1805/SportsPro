@@ -25,11 +25,13 @@ block content
               td #{product.version}
               td #{product.releaseDate}
               td
-                button.btn.btn-primary(
-                  type="button"
-                  data-product-code=product.productCode
+                a.btn.btn-primary(
+                  href=`/products/${product.productCode}/edit`
                 ) Edit
-                button.btn.btn-danger(
+                button.btn.btn-danger.product-delete-button(
                   type="button"
                   data-product-code=product.productCode
                 ) Delete
+
+block scripts
+  script(src="/js/products.js" defer)

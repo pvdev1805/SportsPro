@@ -1,6 +1,6 @@
-include ../mixins/product-form.pug
-
 extends ../layouts/default.pug
+
+include ../mixins/product-form.pug
 
 block content
   .main-panel
@@ -12,3 +12,6 @@ block content
 
         button.btn.btn-primary(type="submit") Save Changes
         a.btn(href="/products") Cancel
+
+block scripts
+  script(src="/js/product-edit.js" defer)

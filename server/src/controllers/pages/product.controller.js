@@ -9,3 +9,21 @@ export const renderProductPage = async (req, res) => {
     products
   })
 }
+
+// GET /products/create
+export const renderProductCreatePage = (req, res) => {
+  res.render('pages/product-create', {
+    title: 'Add Product'
+  })
+}
+
+// GET /products/:productCode/edit
+export const renderProductEditPage = async (req, res) => {
+  const { productCode } = req.params
+  const product = await productService.getProductByCode(productCode)
+
+  res.render('pages/product-edit', {
+    title: 'Edit Product',
+    product
+  })
+}
