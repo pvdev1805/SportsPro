@@ -5,35 +5,41 @@ block content
     .header-section
       h2 Customer Login
       a(href="/") Home
-    // Login Form
+
     .login-panel.mb-4
-      p You must login before you can register a product.
-      .form-group
-        label(for="email") Email:
-        input#email(
-          placeholder="Enter your email"
-          name="email"
-          type="email"
-          )
-      button.btn.btn-primary.full-width Login
-    // Registration Form (Initially hidden - shown after login)
+      form#customer-login-form
+        p You must login before you can register a product.
+        .form-group
+          label(for="email") Email:
+          input#email(
+            name="email"
+            type="email"
+            placeholder="Enter your email"
+            required
+            )
+        button.btn.btn-primary.full-width(type="submit") Login
+
     .registration-panel.mb-4.hidden
-      h3 Register Product
+      .header-section
+        h3 Register Product
+        button#logout-btn.btn.btn-secondary(type="button") Logout
+
       .customer-info.mb-2
         p
           | Customer:
-          span.customer-name David Thompson
-      .form-group
-        label(for="product") Product:
-        select#product(name="product")
-          option(value="") -- Select a Product --
-          option(value="DRAFT10") Draft Manager 1.0
-          option(value="LEAG10") League Scheduler 1.0
-          option(value="TEAM10") Team Manager Version 1.0
-          // Additional products to be added by students
-      button.btn.btn-primary.full-width Register Product
-    // Confirmation Message (Initially hidden - shown after registration)
+          span.customer-name
+
+      form#product-registration-form
+        .form-group
+          label(for="productCode") Product:
+          select#productCode(name="productCode" required)
+            option(value="") Loading products...
+        button.btn.btn-primary.full-width(type="submit") Register Product
+
     .success-panel.hidden
       .alert.alert-success
-        p Product (TEAM10) was registered successfully.
-      button.btn.btn-primary.full-width Register Another Product
+        p.registration-success-message Product registered successfully.
+      button#register-another-btn.btn.btn-primary.full-width(type="button") Register Another Product
+
+block scripts
+  script(src="/js/product-registration.js" type="module")
