@@ -1,12 +1,13 @@
 import { Router } from 'express'
 import * as productController from '../../controllers/apis/product.controller.js'
+import asyncHandler from '../../utils/async-handler.js'
 
 const router = Router()
 
-router.get('/', productController.getAllProducts)
-router.get('/:code', productController.getProductByCode)
-router.post('/', productController.createProduct)
-router.put('/:code', productController.updateProduct)
-router.delete('/:code', productController.deleteProduct)
+router.get('/', asyncHandler(productController.getAllProducts))
+router.get('/:productCode', asyncHandler(productController.getProductByCode))
+router.post('/', asyncHandler(productController.createProduct))
+router.put('/:productCode', asyncHandler(productController.updateProduct))
+router.delete('/:productCode', asyncHandler(productController.deleteProduct))
 
 export default router

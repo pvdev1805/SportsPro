@@ -4,6 +4,7 @@ block content
   .main-panel
     .header-section
       h2 Product List
+      a.btn.btn-primary(href="/products/create") Add Product
       a(href="/") Home
 
     // Product Table
@@ -17,48 +18,20 @@ block content
             th Release Date
             th Action
         tbody
-          // Sample product data - students will replace with dynamic data
-          tr
-            td DRAFT10
-            td Draft Manager 1.0
-            td 1.0
-            td 2022-03-01
-            td
-              button.btn.btn-danger Delete
-          tr
-            td LEAG10
-            td League Scheduler 1.0
-            td 1.0
-            td 2021-06-01
-            td
-              button.btn.btn-danger Delete
+          each product in products
+            tr
+              td #{product.productCode}
+              td #{product.name}
+              td #{product.version}
+              td #{product.releaseDate}
+              td
+                a.btn.btn-primary(
+                  href=`/products/${product.productCode}/edit`
+                ) Edit
+                button.btn.btn-danger.product-delete-button(
+                  type="button"
+                  data-product-code=product.productCode
+                ) Delete
 
-    // Add Product Form
-    .form-panel
-      h3 Add Product
-      .form-group
-        label(for="code") Code:
-        input#code(
-          name="code"
-          type="text"
-          )
-      .form-group
-        label(for="name") Name:
-        input#name(
-          name="name"
-          type="text"
-          )
-      .form-group
-        label(for="version") Version:
-        input#version(
-          step="0.1"
-          name="version"
-          type="number"
-          )
-      .form-group
-        label(for="releaseDate") Release Date:
-        input#releaseDate(
-          name="releaseDate"
-          type="date"
-          )
-      button.btn.btn-primary(type="submit") Add Product
+block scripts
+  script(src="/js/products.js" type="module")
