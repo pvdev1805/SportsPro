@@ -1,0 +1,47 @@
+extends ../../layouts/default.pug
+
+block content
+  .main-panel
+    .header-section
+      h2 Create Incident
+      a.btn.btn-home(href="/") Home
+
+    // Create Incident Form
+    .form-panel
+      .form-row
+        .form-group
+          label(for="customer") Customer:
+          select#customer(name="customer")
+            option(value="") -- Select a Customer --
+            option(value="1") David Thompson (david@example.com)
+            option(value="2") Sarah Garcia (sarah@example.com)
+            option(value="3") Michael Chen (michael@example.com)
+            // Additional customers to be added by students
+        .form-group
+          label(for="product") Product:
+          select#product(name="product")
+            option(value="") -- Select a Product --
+            option(value="DRAFT10") Draft Manager 1.0
+            option(value="LEAG10") League Scheduler 1.0
+            option(value="TEAM10") Team Manager Version 1.0
+            // Additional products to be added by students
+      .form-group
+        label(for="title") Title:
+        input#title(
+          placeholder="Brief description of the issue"
+          name="title"
+          type="text"
+          )
+      .form-group
+        label(for="description") Description:
+        textarea#description(
+          placeholder="Detailed description of the incident"
+          rows="4"
+          name="description"
+          )
+      button.btn.btn-primary(type="submit") Create Incident
+
+    // Confirmation Message (Initially hidden - shown after creation)
+    .success-panel.hidden
+      .alert.alert-success
+        p Incident was successfully created and assigned incident ID #8.

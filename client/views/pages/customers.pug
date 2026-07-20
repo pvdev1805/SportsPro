@@ -1,0 +1,38 @@
+extends ../layouts/default.pug
+
+block content
+  .main-panel
+    .header-section
+      h2 Customer Search
+      a.btn.btn-home(href="/") Home
+
+    // Search Form
+    form#customer-search-form.search-panel.mb-4
+      .form-group
+        label(for="customer-last-name") Last Name:
+        .search-row
+          input#customer-last-name.search-input(
+            placeholder="Enter last name"
+            name="lastName"
+            type="text"
+            )
+          button.btn.btn-primary.search-btn(type="submit") Search
+
+    // Search Results
+    .results-panel.mb-4
+      h3 Results
+
+      p#customer-no-results No customers found.
+
+      .table-container
+        table#customer-results-table
+          thead
+            tr
+              th Name
+              th Email
+              th Phone
+              th Action
+          tbody#customer-results-body
+
+block scripts
+  script(src="/js/customers.js" type="module")

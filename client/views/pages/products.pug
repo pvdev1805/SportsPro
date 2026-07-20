@@ -1,0 +1,38 @@
+extends ../layouts/default.pug
+
+block content
+  .main-panel
+    .header-section
+      h2 Product List
+      a.btn.btn-primary(href="/products/create") Add Product
+      a.btn.btn-home(href="/") Home
+
+    // Product Table
+    .table-container.mb-4
+      table
+        thead
+          tr
+            th Code
+            th Name
+            th Version
+            th Release Date
+            th Action
+        tbody
+          each product in products
+            tr
+              td #{product.productCode}
+              td #{product.name}
+              td #{product.version}
+              td #{product.releaseDate}
+              td
+                .button-group
+                  a.btn.btn-primary(
+                    href=`/products/${product.productCode}/edit`
+                  ) Edit
+                  button.btn.btn-danger.product-delete-button(
+                    type="button"
+                    data-product-code=product.productCode
+                  ) Delete
+
+block scripts
+  script(src="/js/products.js" type="module")

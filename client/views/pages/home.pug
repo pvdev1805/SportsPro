@@ -1,0 +1,36 @@
+extends ../layouts/default.pug
+
+block content
+  .main-panel
+    h2 SportsPro Technical Support
+
+    // Admin Section
+    .menu-section
+      h3 Administrators
+      ul.menu-list
+        li
+          a(href="/products") Manage Products
+        li
+          a(href="/technicians") Manage Technicians
+        li
+          a(href="/customers") Manage Customers
+        li
+          a(href="/incidents/create") Create Incident
+        li
+          a(href="/incidents/assign") Assign Incident
+        li
+          a(href="/incidents") Display Incidents
+
+    // Technicians Section
+    .menu-section
+      h3 Technicians
+      ul.menu-list
+        li
+          a(href="/incidents/update") Update Incident
+
+    // Customers Section
+    .menu-section
+      h3 Customers
+      ul.menu-list
+        li
+          a(href="/register-product") Register Product

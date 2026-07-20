@@ -1,0 +1,38 @@
+extends ../layouts/default.pug
+
+block content
+  .main-panel
+    .header-section
+      h2 Technician List
+      a.btn.btn-primary(href="/technicians/create") Add Technician
+      a.btn.btn-home(href="/") Home
+
+    // Technicians Table
+    .table-container.mb-4
+      table
+        thead
+          tr
+            th First Name
+            th Last Name
+            th Email
+            th Phone
+            th Action
+        tbody
+          each technician in technicians
+            tr
+              td #{technician.firstName}
+              td #{technician.lastName}
+              td #{technician.email}
+              td #{technician.phone}
+              td
+                .button-group
+                  a.btn.btn-primary(
+                    href=`/technicians/${technician.techId}/edit`
+                  ) Edit
+                  button.btn.btn-danger.technician-delete-button(
+                    type="button"
+                    data-technician-id=technician.techId
+                  ) Delete
+
+block scripts
+  script(src="/js/technicians.js" type="module")

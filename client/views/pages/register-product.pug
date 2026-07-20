@@ -1,0 +1,45 @@
+extends ../layouts/default.pug
+
+block content
+  .main-panel.small-panel
+    .header-section
+      h2.customer-login-title Customer Login
+      a.btn.btn-home(href="/") Home
+
+    .login-panel.mb-4
+      form#customer-login-form
+        p You must login before you can register a product.
+        .form-group
+          label(for="email") Email:
+          input#email(
+            name="email"
+            type="email"
+            placeholder="Enter your email"
+            required
+            )
+        button.btn.btn-primary.full-width(type="submit") Login
+
+    .registration-panel.mb-4.hidden
+      .header-section
+        h3 Register Product
+        button#logout-btn.btn.btn-secondary(type="button") Logout
+
+      .customer-info.mb-2
+        p
+          | Customer:
+          span.customer-name
+
+      form#product-registration-form
+        .form-group
+          label(for="productCode") Product:
+          select#productCode(name="productCode" required)
+            option(value="") Loading products...
+        button.btn.btn-primary.full-width(type="submit") Register Product
+
+    .success-panel.hidden
+      .alert.alert-success
+        p.registration-success-message Product registered successfully.
+      button#register-another-btn.btn.btn-primary.full-width(type="button") Register Another Product
+
+block scripts
+  script(src="/js/product-registration.js" type="module")

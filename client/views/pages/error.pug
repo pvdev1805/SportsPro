@@ -1,0 +1,15 @@
+extends ../layouts/default.pug
+
+block content
+  .main-panel.small-panel
+    .header-section
+      h2 Error #{statusCode}
+      a.btn.btn-home(href="/") Home
+
+    p #{message || 'An unexpected error occurred.'}
+    p
+      | Please try again later or return to the home page.
+
+    .button-group
+      a.btn.btn-primary(href="/") Go to Home
+      a.btn.btn-secondary(href="javascript:history.back()") Go Back

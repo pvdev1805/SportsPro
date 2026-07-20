@@ -1,0 +1,18 @@
+extends ../layouts/default.pug
+
+include ../mixins/product-form.pug
+
+block content
+  .main-panel
+    .form-panel
+      h3 Edit Product
+
+      form#product-edit-form(data-product-code=product.productCode)
+        +productForm(product, true)
+
+        .button-group
+          button.btn.btn-primary(type="submit") Save Changes
+          a.btn(href="/products") Cancel
+
+block scripts
+  script(src="/js/product-edit.js" type="module")

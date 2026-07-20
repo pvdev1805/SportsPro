@@ -1,0 +1,41 @@
+mixin productForm(product = {}, isEditing = false)
+  .form-group
+    label(for="productCode") Code:
+    input#productCode(
+      name="productCode"
+      type="text"
+      maxlength="10"
+      value=product.productCode || ''
+      readonly=isEditing
+      required
+      )
+
+  .form-group
+    label(for="name") Name:
+    input#name(
+      name="name"
+      type="text"
+      maxlength="50"
+      value=product.name || ''
+      required
+      )
+
+  .form-group
+    label(for="version") Version:
+    input#version(
+      step="0.1"
+      min="0"
+      name="version"
+      type="number"
+      value=product.version || ''
+      required
+      )
+
+  .form-group
+    label(for="releaseDate") Release Date:
+    input#releaseDate(
+      name="releaseDate"
+      type="date"
+      value=product.releaseDate || ''
+      required
+      )
