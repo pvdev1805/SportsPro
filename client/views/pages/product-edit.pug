@@ -10,8 +10,9 @@ block content
       form#product-edit-form(data-product-code=product.productCode)
         +productForm(product, true)
 
-        button.btn.btn-primary(type="submit") Save Changes
-        a.btn(href="/products") Cancel
+        .button-group
+          button.btn.btn-primary(type="submit") Save Changes
+          a.btn(href="/products") Cancel
 
 block scripts
   script(src="/js/product-edit.js" type="module")

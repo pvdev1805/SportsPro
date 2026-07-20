@@ -10,8 +10,9 @@ block content
       form#technician-create-form
         +technicianForm({})
 
-        button.btn.btn-primary(type="submit") Add Technician
-        a.btn.btn-danger(href="/technicians") Cancel
+        .button-group
+          button.btn.btn-primary(type="submit") Add Technician
+          a.btn.btn-danger(href="/technicians") Cancel
 
 block scripts
   script(src="/js/technician-create.js" type="module")
