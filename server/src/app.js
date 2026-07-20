@@ -1,6 +1,8 @@
 import express from 'express'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import swaggerUi from 'swagger-ui-express'
+import { swaggerSpec } from './config/swagger.js'
 
 import routes from './routes/index.routes.js'
 import notFoundMiddleware from './middlewares/not-found.middleware.js'
@@ -24,6 +26,14 @@ app.use((req, res, next) => {
 
   next()
 })
+
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    explorer: true
+  })
+)
 
 app.use('/', routes)
 
