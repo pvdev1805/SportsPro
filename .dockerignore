@@ -2,3 +2,9 @@
 .gitignore
 node_modules
 dist
+coverage
+.env
+screenshots
+README.md
+.DS_Store
+Thumbs.db

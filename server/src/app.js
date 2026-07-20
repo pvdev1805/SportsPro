@@ -19,6 +19,12 @@ app.use(express.static(path.join(__dirname, '../../client/public')))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+app.use((req, res, next) => {
+  res.setHeader('X-App-Instance', process.env.INSTANCE_NAME || 'local')
+
+  next()
+})
+
 app.use('/', routes)
 
 app.use(notFoundMiddleware)
