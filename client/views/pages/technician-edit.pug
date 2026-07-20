@@ -10,8 +10,9 @@ block content
       form#technician-edit-form(data-technician-id=technician.techId)
         +technicianForm(technician)
 
-        button.btn.btn-primary(type="submit") Save Changes
-        a.btn(href="/technicians") Cancel
+        .button-group
+          button.btn.btn-primary(type="submit") Save Changes
+          a.btn(href="/technicians") Cancel
 
 block scripts
   script(src="/js/technician-edit.js" type="module")

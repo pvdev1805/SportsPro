@@ -4,6 +4,7 @@ import { showError } from './utils/notification.js'
 
 const CURRENT_CUSTOMER_KEY = 'currentCustomer'
 
+const loginTitle = document.querySelector('.customer-login-title')
 const loginPanel = document.querySelector('.login-panel')
 const registrationPanel = document.querySelector('.registration-panel')
 const successPanel = document.querySelector('.success-panel')
@@ -127,6 +128,7 @@ const handleCustomerLogin = async (event) => {
     saveCurrentCustomer(currentCustomer)
     setCustomerDisplay(currentCustomer)
 
+    hidePanel(loginTitle)
     hidePanel(loginPanel)
     hidePanel(successPanel)
     showPanel(registrationPanel)
@@ -195,6 +197,7 @@ const handleLogout = () => {
   productSelect.value = ''
   successMessageElement.textContent = 'Product registered successfully.'
 
+  hidePanel(loginTitle)
   hidePanel(registrationPanel)
   hidePanel(successPanel)
   showPanel(loginPanel)
