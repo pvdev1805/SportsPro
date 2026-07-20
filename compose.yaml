@@ -11,9 +11,6 @@ services:
       POSTGRES_USER: sportspro_user
       POSTGRES_PASSWORD: sportspro_password
 
-    ports:
-      - '5433:5432'
-
     volumes:
       - sportspro_database_data:/var/lib/postgresql
       - ./server/database:/docker-entrypoint-initdb.d:ro
@@ -22,9 +19,91 @@ services:
       test: ['CMD-SHELL', 'pg_isready -U sportspro_user -d sportspro']
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
       start_period: 10s
+
+    networks:
+      - sportspro_network
+
+  app1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: sportspro-app-1
+    restart: unless-stopped
+
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_NAME: sportspro
+      DB_USER: sportspro_user
+      DB_PASSWORD: sportspro_password
+      DB_SCHEMA: sportspro
+
+      INSTANCE_NAME: app1
+
+    depends_on:
+      database:
+        condition: service_healthy
+
+    networks:
+      - sportspro_network
+
+  app2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: sportspro-app-2
+    restart: unless-stopped
+
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_NAME: sportspro
+      DB_USER: sportspro_user
+      DB_PASSWORD: sportspro_password
+      DB_SCHEMA: sportspro
+
+      INSTANCE_NAME: app2
+
+    depends_on:
+      database:
+        condition: service_healthy
+
+    networks:
+      - sportspro_network
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+
+    container_name: sportspro-nginx
+    restart: unless-stopped
+
+    ports:
+      - '8080:80'
+
+    depends_on:
+      - app1
+      - app2
+
+    networks:
+      - sportspro_network
 
 volumes:
   sportspro_database_data:
     name: sportspro_database_data
+
+networks:
+  sportspro_network:
+    name: sportspro_network
+    driver: bridge
