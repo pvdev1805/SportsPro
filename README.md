@@ -55,6 +55,7 @@ The application demonstrates:
 - Nginx reverse proxy
 - Load balancing across multiple application instances
 - Server-side rendered pages with reusable Pug templates
+- Interactive API documentation with Swagger UI
 
 ---
 
@@ -82,6 +83,7 @@ The application demonstrates:
 - Docker
 - Docker Compose
 - Nginx
+- Swagger UI (OpenAPI) for API documentation
 
 ---
 
@@ -102,7 +104,7 @@ sportspro/
 │
 ├── server/
 │   ├── src/
-│   │   ├── config/         # Database and application configuration
+│   │   ├── config/         # Database, application configuration, and Swagger setup
 │   │   ├── controllers/    # HTTP request handlers
 │   │   ├── middlewares/    # Express middleware
 │   │   ├── models/         # Sequelize models and associations
@@ -228,7 +230,13 @@ Once all containers are running, open the application in your browser at:
 http://localhost:8080
 ```
 
-The PostgreSQL container automatically initialises the database during the first statrup.
+Interactive API documentation is available at:
+
+```text
+http://localhost:8080/api-docs
+```
+
+The PostgreSQL container automatically initialises the database during the first startup.
 The following scripts are executed in order:
 
 1. `01-schema.sql`
@@ -257,6 +265,14 @@ docker compose down -v
 ---
 
 ## 📖 9. API Documentation
+
+The REST API is documented using Swagger UI.
+
+After the application starts, the interactive API documentation can be accessed at:
+
+```text
+http://localhost:8080/api-docs
+```
 
 ### 9.1 Products
 
@@ -313,55 +329,68 @@ Common HTTP status codes include:
 
 ---
 
-## 🖼️ 11. Screenshots
+## 🧪 11. API Testing
 
-### 11.1 Home Page
+The REST API can be tested in two ways:
 
-![Home](screenshots/01-home-page.png)
-
-### 11.2 Product Management
-
-![Products](screenshots/02-product-management.png)
-
-### 11.3 Technician Management
-
-![Technicians](screenshots/03-technician-management.png)
-
-### 11.4 Customer Management
-
-![Customers](screenshots/04-customer-management.png)
-
-### 11.5 Customer Login
-
-![Login](screenshots/05-customer-login.png)
-
-### 11.6 Product Registration
-
-![Registration](screenshots/06-product-registration.png)
-
-### 11.7 Docker Containers
-
-![Docker](screenshots/07-docker-containers-running.png)
-
-### 11.8 Docker Containers Status
-
-![Docker Containers Status](screenshots/08-terminal-docker-compose-ps.png)
-
-### 11.9 Database Seed
-
-![Database Seed](screenshots/09-database-seed.png)
-
-### 11.10 Nginx Reverse Proxy
-
-![Nginx Reverse Proxy](screenshots/10-nginx-reverse-proxy.png)
-
-### 11.11 Load Balancing
-
-![Load Balancing](screenshots/11-load-balancing.png)
+- Interactive Swagger UI
+- HTTP clients such as Postman
 
 ---
 
-## ⚠️ 12. Assumptions
+## 🖼️ 12. Screenshots
+
+### 12.1 Home Page
+
+![Home](screenshots/01-home-page.png)
+
+### 12.2 Product Management
+
+![Products](screenshots/02-product-management.png)
+
+### 12.3 Technician Management
+
+![Technicians](screenshots/03-technician-management.png)
+
+### 12.4 Customer Management
+
+![Customers](screenshots/04-customer-management.png)
+
+### 12.5 Customer Login
+
+![Login](screenshots/05-customer-login.png)
+
+### 12.6 Product Registration
+
+![Registration](screenshots/06-product-registration.png)
+
+### 12.7 Docker Containers
+
+![Docker](screenshots/07-docker-containers-running.png)
+
+### 12.8 Docker Containers Status
+
+![Docker Containers Status](screenshots/08-terminal-docker-compose-ps.png)
+
+### 12.9 Database Seed
+
+![Database Seed](screenshots/09-database-seed.png)
+
+### 12.10 Nginx Reverse Proxy
+
+![Nginx Reverse Proxy](screenshots/10-nginx-reverse-proxy.png)
+
+### 12.11 Load Balancing
+
+![Load Balancing](screenshots/11-load-balancing.png)
+
+### 12.12 Swagger API Documentation
+
+![Swagger](screenshots/12-swagger.png)
+
+---
+
+## ⚠️ 13. Assumptions
 
 - Docker Desktop is installed and running.
 - Port 8080 is available.
@@ -371,7 +400,7 @@ Common HTTP status codes include:
 
 ---
 
-## 📝 13. Known Limitations
+## 📝 14. Known Limitations
 
 - No authentication system for administrators.
 - Product registration currently uses customer email only for login.
@@ -380,7 +409,7 @@ Common HTTP status codes include:
 
 ---
 
-## 👨‍💻 14. Project Information
+## 👨‍💻 15. Project Information
 
 **Course:** CSC3480 Web Technology
 
