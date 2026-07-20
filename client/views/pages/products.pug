@@ -5,7 +5,7 @@ block content
     .header-section
       h2 Product List
       a.btn.btn-primary(href="/products/create") Add Product
-      a(href="/") Home
+      a.btn.btn-home(href="/") Home
 
     // Product Table
     .table-container.mb-4
@@ -25,13 +25,14 @@ block content
               td #{product.version}
               td #{product.releaseDate}
               td
-                a.btn.btn-primary(
-                  href=`/products/${product.productCode}/edit`
-                ) Edit
-                button.btn.btn-danger.product-delete-button(
-                  type="button"
-                  data-product-code=product.productCode
-                ) Delete
+                .button-group
+                  a.btn.btn-primary(
+                    href=`/products/${product.productCode}/edit`
+                  ) Edit
+                  button.btn.btn-danger.product-delete-button(
+                    type="button"
+                    data-product-code=product.productCode
+                  ) Delete
 
 block scripts
   script(src="/js/products.js" type="module")

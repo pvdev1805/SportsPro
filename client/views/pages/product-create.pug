@@ -10,8 +10,9 @@ block content
       form#product-create-form
         +productForm({}, false)
 
-        button.btn.btn-primary(type="submit") Add Product
-        a.btn.btn-danger(href="/products") Cancel
+        .button-group
+          button.btn.btn-primary(type="submit") Add Product
+          a.btn.btn-danger(href="/products") Cancel
 
 block scripts
   script(src="/js/product-create.js" type="module")
