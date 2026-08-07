@@ -53,4 +53,16 @@ RefreshToken.belongsTo(User, {
   as: 'user'
 })
 
+User.hasOne(Customer, {
+  foreignKey: 'userId',
+  sourceKey: 'userId',
+  as: 'customer'
+})
+
+Customer.belongsTo(User, {
+  foreignKey: 'userId',
+  targetKey: 'userId',
+  as: 'user'
+})
+
 export { Country, Customer, Registration, Product, User, RefreshToken }
