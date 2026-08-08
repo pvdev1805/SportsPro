@@ -6,6 +6,7 @@ import User from './user.model.js'
 import RefreshToken from './refresh-token.model.js'
 import Technician from './technician.model.js'
 import Administrator from './administrator.model.js'
+import Incident from './incident.model.js'
 
 Customer.belongsTo(Country, {
   foreignKey: 'countryCode',
@@ -91,4 +92,40 @@ Administrator.belongsTo(User, {
   as: 'user'
 })
 
-export { Country, Customer, Registration, Product, User, RefreshToken, Technician, Administrator }
+Customer.hasMany(Incident, {
+  foreignKey: 'customerId',
+  sourceKey: 'customerId',
+  as: 'incidents'
+})
+
+Incident.belongsTo(Customer, {
+  foreignKey: 'customerId',
+  targetKey: 'customerId',
+  as: 'customer'
+})
+
+Product.hasMany(Incident, {
+  foreignKey: 'productCode',
+  sourceKey: 'productCode',
+  as: 'incidents'
+})
+
+Incident.belongsTo(Product, {
+  foreignKey: 'productCode',
+  targetKey: 'productCode',
+  as: 'product'
+})
+
+Technician.hasMany(Incident, {
+  foreignKey: 'techId',
+  sourceKey: 'techId',
+  as: 'incidents'
+})
+
+Incident.belongsTo(Technician, {
+  foreignKey: 'techId',
+  targetKey: 'techId',
+  as: 'technician'
+})
+
+export { Country, Customer, Registration, Product, User, RefreshToken, Technician, Administrator, Incident }
