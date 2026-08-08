@@ -4,6 +4,7 @@ import Registration from './registration.model.js'
 import Product from './product.model.js'
 import User from './user.model.js'
 import RefreshToken from './refresh-token.model.js'
+import Technician from './technician.model.js'
 
 Customer.belongsTo(Country, {
   foreignKey: 'countryCode',
@@ -65,4 +66,16 @@ Customer.belongsTo(User, {
   as: 'user'
 })
 
-export { Country, Customer, Registration, Product, User, RefreshToken }
+User.hasOne(Technician, {
+  foreignKey: 'userId',
+  sourceKey: 'userId',
+  as: 'technician'
+})
+
+Technician.belongsTo(User, {
+  foreignKey: 'userId',
+  targetKey: 'userId',
+  as: 'user'
+})
+
+export { Country, Customer, Registration, Product, User, RefreshToken, Technician }

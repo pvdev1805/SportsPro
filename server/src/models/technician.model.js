@@ -11,6 +11,12 @@ const Technician = sequelize.define(
       autoIncrement: true,
       field: 'tech_id'
     },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      unique: true,
+      field: 'user_id'
+    },
     firstName: {
       type: DataTypes.STRING(50),
       allowNull: false,
@@ -21,20 +27,8 @@ const Technician = sequelize.define(
       allowNull: false,
       field: 'last_name'
     },
-    email: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: true
-      }
-    },
     phone: {
       type: DataTypes.STRING(20),
-      allowNull: false
-    },
-    password: {
-      type: DataTypes.STRING(100),
       allowNull: false
     }
   },
