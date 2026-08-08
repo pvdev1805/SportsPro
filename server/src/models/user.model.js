@@ -17,6 +17,9 @@ const User = sequelize.define(
       unique: true,
       validate: {
         isEmail: true
+      },
+      set(value) {
+        this.setDataValue('email', value.trim().toLowerCase())
       }
     },
     passwordHash: {
@@ -41,8 +44,14 @@ const User = sequelize.define(
   {
     tableName: 'users',
     timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    defaultScope: {
+      attributes: { exclude: ['passwordHash'] }
+    },
+    scopes: {
+      withPasswordHash: {
+        attributes: { include: ['passwordHash'] }
+      }
+    }
   }
 )
 
