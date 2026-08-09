@@ -10,6 +10,12 @@ const Customer = sequelize.define(
       autoIncrement: true,
       field: 'customer_id'
     },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      unique: true,
+      field: 'user_id'
+    },
     firstName: {
       type: DataTypes.STRING(50),
       allowNull: false,
@@ -44,18 +50,6 @@ const Customer = sequelize.define(
     },
     phone: {
       type: DataTypes.STRING(20),
-      allowNull: false
-    },
-    email: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      unique: true,
-      validate: {
-        isEmail: true
-      }
-    },
-    password: {
-      type: DataTypes.STRING(100),
       allowNull: false
     }
   },
