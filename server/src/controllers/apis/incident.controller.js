@@ -32,7 +32,7 @@ export const getMyIncidents = async (req, res) => {
 
 // GET /api/incidents/:incidentId
 export const getIncidentById = async (req, res) => {
-  const { incidentId } = req.params
+  const { incidentId } = req.validated.params
 
   const incident = await incidentService.getIncidentById(incidentId)
 
@@ -44,7 +44,7 @@ export const getIncidentById = async (req, res) => {
 
 // POST /api/incidents
 export const createIncident = async (req, res) => {
-  const { customerId, productCode, title, description } = req.body
+  const { customerId, productCode, title, description } = req.validated.body
 
   const incident = await incidentService.createIncident({
     actorUserId: req.user.userId,
@@ -62,10 +62,11 @@ export const createIncident = async (req, res) => {
   })
 }
 
-// PUT /api/incidents/:incidentId
+// PATCH /api/incidents/:incidentId
 export const updateIncident = async (req, res) => {
-  const { incidentId } = req.params
-  const { productCode, title, description } = req.body
+  const { incidentId } = req.validated.params
+
+  const { productCode, title, description } = req.validated.body
 
   const incident = await incidentService.updateIncident({
     incidentId,
@@ -85,8 +86,8 @@ export const updateIncident = async (req, res) => {
 
 // PATCH /api/incidents/:incidentId/assign
 export const assignTechnician = async (req, res) => {
-  const { incidentId } = req.params
-  const { techId } = req.body
+  const { incidentId } = req.validated.params
+  const { techId } = req.validated.body
 
   const incident = await incidentService.assignTechnician(incidentId, techId)
 
@@ -99,8 +100,8 @@ export const assignTechnician = async (req, res) => {
 
 // PATCH /api/incidents/:incidentId/status
 export const updateIncidentStatus = async (req, res) => {
-  const { incidentId } = req.params
-  const { status } = req.body
+  const { incidentId } = req.validated.params
+  const { status } = req.validated.body
 
   const incident = await incidentService.updateIncidentStatus({
     incidentId,
