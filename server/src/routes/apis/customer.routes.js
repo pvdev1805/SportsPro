@@ -1,6 +1,10 @@
 import { Router } from 'express'
 import * as customerController from '../../controllers/apis/customer.controller.js'
 import asyncHandler from '../../utils/async-handler.js'
+import { USER_ROLES } from '../../constants/user-roles.js'
+import authenticate from '../../middlewares/authenticate.middleware.js'
+import authorize from '../../middlewares/authorize.middleware.js'
+import authorizeCustomerAccess from '../../middlewares/customer-access.middleware.js'
 
 const router = Router()
 
@@ -26,7 +30,7 @@ const router = Router()
  *                   items:
  *                     $ref: '#/components/schemas/Customer'
  */
-router.get('/', asyncHandler(customerController.getAllCustomers))
+router.get('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(customerController.getAllCustomers))
 
 /**
  * @swagger
@@ -46,35 +50,7 @@ router.get('/', asyncHandler(customerController.getAllCustomers))
  *       200:
  *         description: Matching customers
  */
-router.get('/search', asyncHandler(customerController.searchCustomers))
-
-/**
- * @swagger
- * /api/customers/login:
- *   post:
- *     tags:
- *       - Customers
- *     summary: Customer login using email
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 example: daniel.roberts@example.com
- *     responses:
- *       200:
- *         description: Customer login successful
- *       401:
- *         description: Customer is not registered
- */
-router.post('/login', asyncHandler(customerController.loginCustomer))
+router.get('/search', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(customerController.searchCustomers))
 
 /**
  * @swagger
@@ -96,7 +72,13 @@ router.post('/login', asyncHandler(customerController.loginCustomer))
  *       404:
  *         description: Customer not found
  */
-router.get('/:customerId', asyncHandler(customerController.getCustomerById))
+router.get(
+  '/:customerId',
+  authenticate,
+  authorize(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER),
+  authorizeCustomerAccess,
+  asyncHandler(customerController.getCustomerById)
+)
 
 /**
  * @swagger
@@ -124,6 +106,12 @@ router.get('/:customerId', asyncHandler(customerController.getCustomerById))
  *       404:
  *         description: Customer not found
  */
-router.put('/:customerId', asyncHandler(customerController.updateCustomer))
+router.put(
+  '/:customerId',
+  authenticate,
+  authorize(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER),
+  authorizeCustomerAccess,
+  asyncHandler(customerController.updateCustomer)
+)
 
 export default router

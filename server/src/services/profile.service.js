@@ -1,5 +1,6 @@
 import { Administrator, Country, Customer, Technician, User } from '../models/index.js'
 import { NotFoundError } from '../utils/app-error.js'
+import { USER_ROLES } from '../constants/user-roles.js'
 
 const toPublicProfile = (user) => {
   const baseProfile = {
@@ -10,7 +11,7 @@ const toPublicProfile = (user) => {
   }
 
   switch (user.role) {
-    case 'admin':
+    case USER_ROLES.ADMIN:
       return {
         ...baseProfile,
         profile: user.administrator
@@ -20,7 +21,7 @@ const toPublicProfile = (user) => {
           : null
       }
 
-    case 'technician':
+    case USER_ROLES.TECHNICIAN:
       return {
         ...baseProfile,
         profile: user.technician
@@ -33,7 +34,7 @@ const toPublicProfile = (user) => {
           : null
       }
 
-    case 'customer':
+    case USER_ROLES.CUSTOMER:
       return {
         ...baseProfile,
         profile: user.customer
