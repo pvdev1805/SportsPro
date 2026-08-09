@@ -4,6 +4,12 @@ import asyncHandler from '../../utils/async-handler.js'
 import { USER_ROLES } from '../../constants/user-roles.js'
 import authenticate from '../../middlewares/authenticate.middleware.js'
 import authorize from '../../middlewares/authorize.middleware.js'
+import validate from '../../middlewares/validate.middleware.js'
+import {
+  createProductSchema,
+  productCodeParamsOnlySchema,
+  updateProductSchema
+} from '../../validators/product.validator.js'
 
 const router = Router()
 
@@ -53,6 +59,7 @@ router.get(
   '/:productCode',
   authenticate,
   authorize(USER_ROLES.ADMIN, USER_ROLES.TECHNICIAN, USER_ROLES.CUSTOMER),
+  validate(productCodeParamsOnlySchema),
   asyncHandler(productController.getProductByCode)
 )
 
@@ -77,15 +84,21 @@ router.get(
  *    500:
  *     description: Internal server error
  */
-router.post('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(productController.createProduct))
+router.post(
+  '/',
+  authenticate,
+  authorize(USER_ROLES.ADMIN),
+  validate(createProductSchema),
+  asyncHandler(productController.createProduct)
+)
 
 /**
  * @swagger
  * /api/products/{productCode}:
- *  put:
+ *  patch:
  *   tags:
  *    - Products
- *   summary: Update a product by its code
+ *   summary: Partially update a product by its code
  *   parameters:
  *    - in: path
  *      name: productCode
@@ -107,7 +120,13 @@ router.post('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(product
  *    500:
  *     description: Internal server error
  */
-router.put('/:productCode', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(productController.updateProduct))
+router.patch(
+  '/:productCode',
+  authenticate,
+  authorize(USER_ROLES.ADMIN),
+  validate(updateProductSchema),
+  asyncHandler(productController.updateProduct)
+)
 
 /**
  * @swagger
@@ -131,6 +150,12 @@ router.put('/:productCode', authenticate, authorize(USER_ROLES.ADMIN), asyncHand
  *    500:
  *     description: Internal server error
  */
-router.delete('/:productCode', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(productController.deleteProduct))
+router.delete(
+  '/:productCode',
+  authenticate,
+  authorize(USER_ROLES.ADMIN),
+  validate(productCodeParamsOnlySchema),
+  asyncHandler(productController.deleteProduct)
+)
 
 export default router
