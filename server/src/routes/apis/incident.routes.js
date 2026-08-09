@@ -6,6 +6,14 @@ import authenticate from '../../middlewares/authenticate.middleware.js'
 import authorize from '../../middlewares/authorize.middleware.js'
 import authorizeIncidentAccess from '../../middlewares/incident-access.middleware.js'
 import asyncHandler from '../../utils/async-handler.js'
+import validate from '../../middlewares/validate.middleware.js'
+import {
+  assignTechnicianSchema,
+  createIncidentSchema,
+  incidentIdParamsOnlySchema,
+  updateIncidentSchema,
+  updateIncidentStatusSchema
+} from '../../validators/incident.validator.js'
 
 const router = Router()
 
@@ -33,6 +41,7 @@ router.post(
   '/',
   authenticate,
   authorize(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER),
+  validate(createIncidentSchema),
   asyncHandler(incidentController.createIncident)
 )
 
@@ -44,18 +53,20 @@ router.get(
   '/:incidentId',
   authenticate,
   authorize(USER_ROLES.ADMIN, USER_ROLES.TECHNICIAN, USER_ROLES.CUSTOMER),
+  validate(incidentIdParamsOnlySchema),
   authorizeIncidentAccess,
   asyncHandler(incidentController.getIncidentById)
 )
 
-// PUT /api/incidents/:incidentId
+// PATCH /api/incidents/:incidentId
 // Admin: any incident
 // Technician: assigned incident only
 // Customer: own incident only; service further restricts customer to open incidents
-router.put(
+router.patch(
   '/:incidentId',
   authenticate,
   authorize(USER_ROLES.ADMIN, USER_ROLES.TECHNICIAN, USER_ROLES.CUSTOMER),
+  validate(updateIncidentSchema),
   authorizeIncidentAccess,
   asyncHandler(incidentController.updateIncident)
 )
@@ -66,6 +77,7 @@ router.patch(
   '/:incidentId/assign',
   authenticate,
   authorize(USER_ROLES.ADMIN),
+  validate(assignTechnicianSchema),
   asyncHandler(incidentController.assignTechnician)
 )
 
@@ -77,6 +89,7 @@ router.patch(
   '/:incidentId/status',
   authenticate,
   authorize(USER_ROLES.ADMIN, USER_ROLES.TECHNICIAN),
+  validate(updateIncidentStatusSchema),
   asyncHandler(incidentController.updateIncidentStatus)
 )
 

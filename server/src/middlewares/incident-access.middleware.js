@@ -4,7 +4,7 @@ import { BadRequestError, ForbiddenError, NotFoundError } from '../utils/app-err
 
 const authorizeIncidentAccess = async (req, res, next) => {
   try {
-    const incidentId = Number(req.params.incidentId)
+    const incidentId = req.validated?.params?.incidentId ?? Number(req.params.incidentId)
 
     if (!Number.isInteger(incidentId) || incidentId <= 0) {
       throw new BadRequestError('Invalid incident ID')

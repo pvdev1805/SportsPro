@@ -4,7 +4,7 @@ import customerService from '../../services/customer.service.js'
 export const getAllCustomers = async (req, res) => {
   const customers = await customerService.getAllCustomers()
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     data: customers
   })
@@ -12,11 +12,11 @@ export const getAllCustomers = async (req, res) => {
 
 // GET /api/customers/search?lastName=...
 export const searchCustomers = async (req, res) => {
-  const { lastName = '' } = req.query
+  const { lastName } = req.validated.query
 
-  const customers = await customerService.searchCustomersByLastName(lastName.trim())
+  const customers = await customerService.searchCustomersByLastName(lastName)
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     data: customers
   })
@@ -24,25 +24,23 @@ export const searchCustomers = async (req, res) => {
 
 // GET /api/customers/:customerId
 export const getCustomerById = async (req, res) => {
-  const { customerId } = req.params
+  const { customerId } = req.validated.params
 
   const customer = await customerService.getCustomerById(customerId)
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     data: customer
   })
 }
 
-// PUT /api/customers/:customerId
+// PATCH /api/customers/:customerId
 export const updateCustomer = async (req, res) => {
-  const { customerId } = req.params
+  const { customerId } = req.validated.params
 
-  const customerData = req.body
+  const customer = await customerService.updateCustomer(customerId, req.validated.body)
 
-  const customer = await customerService.updateCustomer(customerId, customerData)
-
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     message: 'Customer updated successfully',
     data: customer

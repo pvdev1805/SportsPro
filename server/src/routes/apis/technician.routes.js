@@ -4,6 +4,12 @@ import asyncHandler from '../../utils/async-handler.js'
 import { USER_ROLES } from '../../constants/user-roles.js'
 import authenticate from '../../middlewares/authenticate.middleware.js'
 import authorize from '../../middlewares/authorize.middleware.js'
+import validate from '../../middlewares/validate.middleware.js'
+import {
+  createTechnicianSchema,
+  technicianIdParamsOnlySchema,
+  updateTechnicianSchema
+} from '../../validators/technician.validator.js'
 
 const router = Router()
 
@@ -40,7 +46,13 @@ router.get('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(technici
  *       404:
  *         description: Technician not found
  */
-router.get('/:techId', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(technicianController.getTechnicianById))
+router.get(
+  '/:techId',
+  authenticate,
+  authorize(USER_ROLES.ADMIN),
+  validate(technicianIdParamsOnlySchema),
+  asyncHandler(technicianController.getTechnicianById)
+)
 
 /**
  * @swagger
@@ -61,15 +73,21 @@ router.get('/:techId', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(t
  *       409:
  *         description: Technician already exists
  */
-router.post('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(technicianController.createTechnician))
+router.post(
+  '/',
+  authenticate,
+  authorize(USER_ROLES.ADMIN),
+  validate(createTechnicianSchema),
+  asyncHandler(technicianController.createTechnician)
+)
 
 /**
  * @swagger
  * /api/technicians/{techId}:
- *   put:
+ *   patch:
  *     tags:
  *       - Technicians
- *     summary: Update a technician by ID
+ *     summary: Partially update a technician by ID
  *     parameters:
  *       - in: path
  *         name: techId
@@ -89,7 +107,13 @@ router.post('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(technic
  *       404:
  *         description: Technician not found
  */
-router.put('/:techId', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(technicianController.updateTechnician))
+router.patch(
+  '/:techId',
+  authenticate,
+  authorize(USER_ROLES.ADMIN),
+  validate(updateTechnicianSchema),
+  asyncHandler(technicianController.updateTechnician)
+)
 
 /**
  * @swagger
@@ -115,6 +139,7 @@ router.delete(
   '/:techId',
   authenticate,
   authorize(USER_ROLES.ADMIN),
+  validate(technicianIdParamsOnlySchema),
   asyncHandler(technicianController.deleteTechnician)
 )
 

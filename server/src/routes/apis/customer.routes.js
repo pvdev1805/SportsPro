@@ -5,6 +5,12 @@ import { USER_ROLES } from '../../constants/user-roles.js'
 import authenticate from '../../middlewares/authenticate.middleware.js'
 import authorize from '../../middlewares/authorize.middleware.js'
 import authorizeCustomerAccess from '../../middlewares/customer-access.middleware.js'
+import validate from '../../middlewares/validate.middleware.js'
+import {
+  customerIdParamsOnlySchema,
+  searchCustomersSchema,
+  updateCustomerSchema
+} from '../../validators/customer.validator.js'
 
 const router = Router()
 
@@ -50,7 +56,13 @@ router.get('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(customer
  *       200:
  *         description: Matching customers
  */
-router.get('/search', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(customerController.searchCustomers))
+router.get(
+  '/search',
+  authenticate,
+  authorize(USER_ROLES.ADMIN),
+  validate(searchCustomersSchema),
+  asyncHandler(customerController.searchCustomers)
+)
 
 /**
  * @swagger
@@ -76,6 +88,7 @@ router.get(
   '/:customerId',
   authenticate,
   authorize(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER),
+  validate(customerIdParamsOnlySchema),
   authorizeCustomerAccess,
   asyncHandler(customerController.getCustomerById)
 )
@@ -83,10 +96,10 @@ router.get(
 /**
  * @swagger
  * /api/customers/{customerId}:
- *   put:
+ *   patch:
  *     tags:
  *       - Customers
- *     summary: Update customer information
+ *     summary: Partially update customer information
  *     parameters:
  *       - in: path
  *         name: customerId
@@ -106,10 +119,11 @@ router.get(
  *       404:
  *         description: Customer not found
  */
-router.put(
+router.patch(
   '/:customerId',
   authenticate,
   authorize(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER),
+  validate(updateCustomerSchema),
   authorizeCustomerAccess,
   asyncHandler(customerController.updateCustomer)
 )

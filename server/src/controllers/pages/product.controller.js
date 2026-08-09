@@ -4,7 +4,7 @@ import productService from '../../services/product.service.js'
 export const renderProductPage = async (req, res) => {
   const products = await productService.getAllProducts()
 
-  res.render('pages/products', {
+  return res.render('pages/products', {
     title: 'Manage Products',
     products
   })
@@ -12,17 +12,18 @@ export const renderProductPage = async (req, res) => {
 
 // GET /products/create
 export const renderProductCreatePage = (req, res) => {
-  res.render('pages/product-create', {
+  return res.render('pages/product-create', {
     title: 'Add Product'
   })
 }
 
 // GET /products/:productCode/edit
 export const renderProductEditPage = async (req, res) => {
-  const { productCode } = req.params
+  const { productCode } = req.validated.params
+
   const product = await productService.getProductByCode(productCode)
 
-  res.render('pages/product-edit', {
+  return res.render('pages/product-edit', {
     title: 'Edit Product',
     product
   })
