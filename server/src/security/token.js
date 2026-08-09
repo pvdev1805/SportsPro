@@ -1,3 +1,4 @@
+import { createHash, randomUUID } from 'node:crypto'
 import jwt from 'jsonwebtoken'
 
 const ACCESS_TOKEN_TYPE = 'access'
@@ -48,7 +49,7 @@ const validateTokenPayload = (payload, expectedType) => {
   return payload
 }
 
-const generateToken = ({ userId, role, type, secret, expiresIn }) => {
+const generateToken = ({ userId, role, type, secret, expiresIn, jwtid }) => {
   if (!userId) {
     throw new Error('User ID is required to generate token')
   }
@@ -62,7 +63,8 @@ const generateToken = ({ userId, role, type, secret, expiresIn }) => {
     expiresIn,
     issuer: TOKEN_ISSUER,
     audience: TOKEN_AUDIENCE,
-    algorithm: TOKEN_ALGORITHM
+    algorithm: TOKEN_ALGORITHM,
+    ...(jwtid && { jwtid }) // Only include jwtid if it's provided
   })
 }
 
@@ -92,7 +94,8 @@ export const generateRefreshToken = (userId, role) => {
     role,
     type: REFRESH_TOKEN_TYPE,
     secret: JWT_REFRESH_SECRET,
-    expiresIn: JWT_REFRESH_EXPIRES_IN
+    expiresIn: JWT_REFRESH_EXPIRES_IN,
+    jwtid: randomUUID() // Generate a unique identifier for the refresh token
   })
 }
 
@@ -102,4 +105,8 @@ export const verifyAccessToken = (token) => {
 
 export const verifyRefreshToken = (token) => {
   return verifyToken(token, JWT_REFRESH_SECRET, REFRESH_TOKEN_TYPE)
+}
+
+export const hashRefreshToken = (token) => {
+  return createHash('sha256').update(token).digest('hex')
 }

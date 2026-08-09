@@ -49,7 +49,7 @@ const User = sequelize.define(
     },
     scopes: {
       withPasswordHash: {
-        attributes: { include: ['passwordHash'] }
+        attributes: ['userId', 'email', 'passwordHash', 'role', 'isActive', 'createdAt', 'updatedAt']
       }
     }
   }

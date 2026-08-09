@@ -49,13 +49,14 @@ const createTechnician = async (technicianData) => {
     throw new ConflictError(`User with email "${technicianData.email}" already exists`)
   }
 
-  const hashedPassword = await hashPassword(technicianData.password)
+  const passwordHash = await hashPassword(technicianData.password)
 
   return sequelize.transaction(async (transaction) => {
     const user = await User.create(
       {
         email,
-        passwordHash: hashedPassword,
+        passwordHash,
+        role: 'technician',
         isActive: true
       },
       { transaction }
