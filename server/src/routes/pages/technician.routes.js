@@ -9,7 +9,7 @@ const router = Router()
 router.get('/', asyncHandler(technicianController.renderTechnicianPage))
 router.get('/create', asyncHandler(technicianController.renderTechnicianCreatePage))
 router.get(
-  '/:technicianId/edit',
+  '/:techId/edit',
   validate(technicianIdParamsOnlySchema),
   asyncHandler(technicianController.renderTechnicianEditPage)
 )
