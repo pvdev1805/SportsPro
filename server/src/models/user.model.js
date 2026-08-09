@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize'
 
 import sequelize from '../config/database.js'
+import { USER_ROLE_VALUES } from '../constants/user-roles.js'
 
 const User = sequelize.define(
   'User',
@@ -31,7 +32,7 @@ const User = sequelize.define(
       type: DataTypes.STRING(20),
       allowNull: false,
       validate: {
-        isIn: [['admin', 'technician', 'customer']]
+        isIn: [USER_ROLE_VALUES]
       }
     },
     isActive: {

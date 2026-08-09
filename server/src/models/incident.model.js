@@ -1,5 +1,6 @@
 import { DataTypes } from 'sequelize'
 import sequelize from '../config/database.js'
+import { INCIDENT_STATUS, INCIDENT_STATUS_VALUES } from '../constants/incident-status.js'
 
 const Incident = sequelize.define(
   'Incident',
@@ -27,9 +28,9 @@ const Incident = sequelize.define(
     status: {
       type: DataTypes.STRING(20),
       allowNull: false,
-      defaultValue: 'open',
+      defaultValue: INCIDENT_STATUS.OPEN,
       validate: {
-        isIn: [['open', 'assigned', 'in_progress', 'resolved', 'closed']]
+        isIn: [INCIDENT_STATUS_VALUES]
       }
     },
     dateOpened: {

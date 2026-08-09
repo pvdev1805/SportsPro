@@ -48,16 +48,3 @@ export const updateCustomer = async (req, res) => {
     data: customer
   })
 }
-
-// POST /api/customers/login
-export const loginCustomer = async (req, res) => {
-  const { email = '' } = req.body
-
-  const customer = await customerService.loginCustomer(email.trim())
-
-  res.status(200).json({
-    success: true,
-    message: 'Customer login successful',
-    data: customer
-  })
-}
