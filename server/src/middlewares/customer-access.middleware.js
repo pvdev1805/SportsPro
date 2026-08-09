@@ -8,7 +8,7 @@ const authorizeCustomerAccess = async (req, res, next) => {
       return next()
     }
 
-    const customerId = Number(req.params.customerId)
+    const customerId = req.validated?.params?.customerId ?? Number(req.params.customerId)
 
     if (!Number.isInteger(customerId) || customerId <= 0) {
       throw new BadRequestError('Invalid customer ID')
@@ -25,7 +25,7 @@ const authorizeCustomerAccess = async (req, res, next) => {
       throw new ForbiddenError('You do not have permission to access this customer')
     }
 
-    next()
+    return next()
   } catch (error) {
     next(error)
   }

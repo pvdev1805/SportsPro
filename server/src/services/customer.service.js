@@ -1,7 +1,8 @@
 import { Op } from 'sequelize'
+
 import sequelize from '../config/database.js'
 import { Country, Customer, User } from '../models/index.js'
-import { NotFoundError } from '../utils/app-error.js'
+import { ConflictError, NotFoundError } from '../utils/app-error.js'
 
 const customerIncludes = [
   {
@@ -16,19 +17,17 @@ const customerIncludes = [
 ]
 
 const getAllCustomers = async () => {
-  const customers = await Customer.findAll({
+  return Customer.findAll({
     include: customerIncludes,
     order: [
       ['firstName', 'ASC'],
       ['lastName', 'ASC']
     ]
   })
-
-  return customers
 }
 
 const searchCustomersByLastName = async (lastName) => {
-  const customers = await Customer.findAll({
+  return Customer.findAll({
     where: {
       lastName: {
         [Op.iLike]: `%${lastName}%`
@@ -40,8 +39,6 @@ const searchCustomersByLastName = async (lastName) => {
       ['lastName', 'ASC']
     ]
   })
-
-  return customers
 }
 
 const getCustomerById = async (customerId, options = {}) => {
@@ -61,25 +58,69 @@ const updateCustomer = async (customerId, customerData) => {
   return sequelize.transaction(async (transaction) => {
     const customer = await getCustomerById(customerId, { transaction })
 
-    const updateData = {
-      firstName: customerData.firstName,
-      lastName: customerData.lastName,
-      address: customerData.address,
-      city: customerData.city,
-      state: customerData.state,
-      postalCode: customerData.postalCode,
-      countryCode: customerData.countryCode,
-      phone: customerData.phone
+    const customerUpdateData = {}
+
+    if (customerData.firstName !== undefined) {
+      customerUpdateData.firstName = customerData.firstName
     }
 
-    await customer.update(updateData, { transaction })
+    if (customerData.lastName !== undefined) {
+      customerUpdateData.lastName = customerData.lastName
+    }
 
-    if (customerData.email) {
+    if (customerData.address !== undefined) {
+      customerUpdateData.address = customerData.address
+    }
+
+    if (customerData.city !== undefined) {
+      customerUpdateData.city = customerData.city
+    }
+
+    if (customerData.state !== undefined) {
+      customerUpdateData.state = customerData.state
+    }
+
+    if (customerData.postalCode !== undefined) {
+      customerUpdateData.postalCode = customerData.postalCode
+    }
+
+    if (customerData.countryCode !== undefined) {
+      const country = await Country.findByPk(customerData.countryCode, { transaction })
+
+      if (!country) {
+        throw new NotFoundError(`Country with code "${customerData.countryCode}" not found`)
+      }
+
+      customerUpdateData.countryCode = customerData.countryCode
+    }
+
+    if (customerData.phone !== undefined) {
+      customerUpdateData.phone = customerData.phone
+    }
+
+    if (Object.keys(customerUpdateData).length > 0) {
+      await customer.update(customerUpdateData, { transaction })
+    }
+
+    if (customerData.email !== undefined) {
+      const existingUser = await User.findOne({
+        where: {
+          email: customerData.email
+        },
+        transaction
+      })
+
+      if (existingUser && existingUser.userId !== customer.userId) {
+        throw new ConflictError(`User with email "${customerData.email}" already exists`)
+      }
+
       await customer.user.update(
         {
           email: customerData.email
         },
-        { transaction }
+        {
+          transaction
+        }
       )
     }
 
