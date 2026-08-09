@@ -1,8 +1,8 @@
 import sequelize from '../config/database.js'
+import { USER_ROLES } from '../constants/user-roles.js'
 import { Technician, User } from '../models/index.js'
 import { hashPassword } from '../security/password.js'
 import { ConflictError, NotFoundError } from '../utils/app-error.js'
-import { USER_ROLES } from '../constants/user-roles.js'
 
 const technicianIncludes = [
   {
@@ -13,15 +13,13 @@ const technicianIncludes = [
 ]
 
 const getAllTechnicians = async () => {
-  const technicians = await Technician.findAll({
+  return Technician.findAll({
     include: technicianIncludes,
     order: [
       ['firstName', 'ASC'],
       ['lastName', 'ASC']
     ]
   })
-
-  return technicians
 }
 
 const getTechnicianById = async (techId, options = {}) => {
@@ -38,7 +36,7 @@ const getTechnicianById = async (techId, options = {}) => {
 }
 
 const createTechnician = async (technicianData) => {
-  const email = technicianData.email.trim().toLowerCase()
+  const { firstName, lastName, email, phone, password } = technicianData
 
   const existingUser = await User.findOne({
     where: {
@@ -47,10 +45,10 @@ const createTechnician = async (technicianData) => {
   })
 
   if (existingUser) {
-    throw new ConflictError(`User with email "${technicianData.email}" already exists`)
+    throw new ConflictError(`User with email "${email}" already exists`)
   }
 
-  const passwordHash = await hashPassword(technicianData.password)
+  const passwordHash = await hashPassword(password)
 
   return sequelize.transaction(async (transaction) => {
     const user = await User.create(
@@ -60,17 +58,21 @@ const createTechnician = async (technicianData) => {
         role: USER_ROLES.TECHNICIAN,
         isActive: true
       },
-      { transaction }
+      {
+        transaction
+      }
     )
 
     const technician = await Technician.create(
       {
         userId: user.userId,
-        firstName: technicianData.firstName,
-        lastName: technicianData.lastName,
-        phone: technicianData.phone
+        firstName,
+        lastName,
+        phone
       },
-      { transaction }
+      {
+        transaction
+      }
     )
 
     return getTechnicianById(technician.techId, { transaction })
@@ -81,20 +83,43 @@ const updateTechnician = async (techId, technicianData) => {
   return sequelize.transaction(async (transaction) => {
     const technician = await getTechnicianById(techId, { transaction })
 
-    const updateData = {
-      firstName: technicianData.firstName,
-      lastName: technicianData.lastName,
-      phone: technicianData.phone
+    const technicianUpdateData = {}
+
+    if (technicianData.firstName !== undefined) {
+      technicianUpdateData.firstName = technicianData.firstName
     }
 
-    await technician.update(updateData, { transaction })
+    if (technicianData.lastName !== undefined) {
+      technicianUpdateData.lastName = technicianData.lastName
+    }
 
-    if (technicianData.email) {
+    if (technicianData.phone !== undefined) {
+      technicianUpdateData.phone = technicianData.phone
+    }
+
+    if (Object.keys(technicianUpdateData).length > 0) {
+      await technician.update(technicianUpdateData, { transaction })
+    }
+
+    if (technicianData.email !== undefined) {
+      const existingUser = await User.findOne({
+        where: {
+          email: technicianData.email
+        },
+        transaction
+      })
+
+      if (existingUser && existingUser.userId !== technician.userId) {
+        throw new ConflictError(`User with email "${technicianData.email}" already exists`)
+      }
+
       await technician.user.update(
         {
           email: technicianData.email
         },
-        { transaction }
+        {
+          transaction
+        }
       )
     }
 
@@ -110,7 +135,9 @@ const deleteTechnician = async (techId) => {
       {
         isActive: false
       },
-      { transaction }
+      {
+        transaction
+      }
     )
 
     return getTechnicianById(techId, { transaction })
