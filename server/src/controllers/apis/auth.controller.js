@@ -26,7 +26,7 @@ const getClearRefreshTokenCookieOptions = () => {
 // POST /api/auth/register
 const register = async (req, res, next) => {
   try {
-    const result = await authService.registerCustomer(req.body)
+    const result = await authService.registerCustomer(req.validated.body)
 
     res.cookie(REFRESH_TOKEN_COOKIE, result.refreshToken, getRefreshTokenCookieOptions())
 
@@ -46,7 +46,7 @@ const register = async (req, res, next) => {
 // POST /api/auth/login
 const login = async (req, res, next) => {
   try {
-    const result = await authService.login(req.body)
+    const result = await authService.login(req.validated.body)
 
     res.cookie(REFRESH_TOKEN_COOKIE, result.refreshToken, getRefreshTokenCookieOptions())
 

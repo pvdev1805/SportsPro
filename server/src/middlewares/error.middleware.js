@@ -11,11 +11,17 @@ const errorMiddleware = (error, req, res, _next) => {
   const message = isServerError && process.env.NODE_ENV === 'production' ? 'Internal server error' : error.message
 
   if (req.originalUrl.startsWith('/api')) {
-    return res.status(statusCode).json({
+    const errorResponse = {
       error: {
         message
       }
-    })
+    }
+
+    if (error.details) {
+      errorResponse.error.details = error.details
+    }
+
+    return res.status(statusCode).json(errorResponse)
   }
 
   return res.status(statusCode).render('pages/error', {
