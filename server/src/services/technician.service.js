@@ -2,6 +2,7 @@ import sequelize from '../config/database.js'
 import { Technician, User } from '../models/index.js'
 import { hashPassword } from '../security/password.js'
 import { ConflictError, NotFoundError } from '../utils/app-error.js'
+import { USER_ROLES } from '../constants/user-roles.js'
 
 const technicianIncludes = [
   {
@@ -56,7 +57,7 @@ const createTechnician = async (technicianData) => {
       {
         email,
         passwordHash,
-        role: 'technician',
+        role: USER_ROLES.TECHNICIAN,
         isActive: true
       },
       { transaction }

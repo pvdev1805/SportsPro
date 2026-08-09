@@ -3,6 +3,7 @@ import { Customer, RefreshToken, User } from '../models/index.js'
 import { hashPassword, verifyPassword } from '../security/password.js'
 import { generateAccessToken, generateRefreshToken, hashRefreshToken, verifyRefreshToken } from '../security/token.js'
 import { ConflictError, ForbiddenError, UnauthorizedError } from '../utils/app-error.js'
+import { USER_ROLES } from '../constants/user-roles.js'
 
 const normalizeEmail = (email) => {
   return email.trim().toLowerCase()
@@ -59,7 +60,7 @@ const registerCustomer = async (registrationData) => {
       {
         email,
         passwordHash,
-        role: 'customer',
+        role: USER_ROLES.CUSTOMER,
         isActive: true
       },
       { transaction }

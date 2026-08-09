@@ -1,6 +1,9 @@
 import { Router } from 'express'
 import * as productController from '../../controllers/apis/product.controller.js'
 import asyncHandler from '../../utils/async-handler.js'
+import { USER_ROLES } from '../../constants/user-roles.js'
+import authenticate from '../../middlewares/authenticate.middleware.js'
+import authorize from '../../middlewares/authorize.middleware.js'
 
 const router = Router()
 
@@ -17,7 +20,12 @@ const router = Router()
  *    500:
  *     description: Internal server error
  */
-router.get('/', asyncHandler(productController.getAllProducts))
+router.get(
+  '/',
+  authenticate,
+  authorize(USER_ROLES.ADMIN, USER_ROLES.TECHNICIAN, USER_ROLES.CUSTOMER),
+  asyncHandler(productController.getAllProducts)
+)
 
 /**
  * @swagger
@@ -41,7 +49,12 @@ router.get('/', asyncHandler(productController.getAllProducts))
  *    500:
  *     description: Internal server error
  */
-router.get('/:productCode', asyncHandler(productController.getProductByCode))
+router.get(
+  '/:productCode',
+  authenticate,
+  authorize(USER_ROLES.ADMIN, USER_ROLES.TECHNICIAN, USER_ROLES.CUSTOMER),
+  asyncHandler(productController.getProductByCode)
+)
 
 /**
  * @swagger
@@ -64,7 +77,7 @@ router.get('/:productCode', asyncHandler(productController.getProductByCode))
  *    500:
  *     description: Internal server error
  */
-router.post('/', asyncHandler(productController.createProduct))
+router.post('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(productController.createProduct))
 
 /**
  * @swagger
@@ -94,7 +107,7 @@ router.post('/', asyncHandler(productController.createProduct))
  *    500:
  *     description: Internal server error
  */
-router.put('/:productCode', asyncHandler(productController.updateProduct))
+router.put('/:productCode', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(productController.updateProduct))
 
 /**
  * @swagger
@@ -118,6 +131,6 @@ router.put('/:productCode', asyncHandler(productController.updateProduct))
  *    500:
  *     description: Internal server error
  */
-router.delete('/:productCode', asyncHandler(productController.deleteProduct))
+router.delete('/:productCode', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(productController.deleteProduct))
 
 export default router

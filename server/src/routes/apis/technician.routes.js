@@ -1,6 +1,9 @@
 import { Router } from 'express'
 import * as technicianController from '../../controllers/apis/technician.controller.js'
 import asyncHandler from '../../utils/async-handler.js'
+import { USER_ROLES } from '../../constants/user-roles.js'
+import authenticate from '../../middlewares/authenticate.middleware.js'
+import authorize from '../../middlewares/authorize.middleware.js'
 
 const router = Router()
 
@@ -15,7 +18,7 @@ const router = Router()
  *       200:
  *         description: A list of technicians
  */
-router.get('/', asyncHandler(technicianController.getAllTechnicians))
+router.get('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(technicianController.getAllTechnicians))
 
 /**
  * @swagger
@@ -37,7 +40,7 @@ router.get('/', asyncHandler(technicianController.getAllTechnicians))
  *       404:
  *         description: Technician not found
  */
-router.get('/:techId', asyncHandler(technicianController.getTechnicianById))
+router.get('/:techId', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(technicianController.getTechnicianById))
 
 /**
  * @swagger
@@ -58,7 +61,7 @@ router.get('/:techId', asyncHandler(technicianController.getTechnicianById))
  *       409:
  *         description: Technician already exists
  */
-router.post('/', asyncHandler(technicianController.createTechnician))
+router.post('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(technicianController.createTechnician))
 
 /**
  * @swagger
@@ -86,7 +89,7 @@ router.post('/', asyncHandler(technicianController.createTechnician))
  *       404:
  *         description: Technician not found
  */
-router.put('/:techId', asyncHandler(technicianController.updateTechnician))
+router.put('/:techId', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(technicianController.updateTechnician))
 
 /**
  * @swagger
@@ -108,6 +111,11 @@ router.put('/:techId', asyncHandler(technicianController.updateTechnician))
  *       404:
  *         description: Technician not found
  */
-router.delete('/:techId', asyncHandler(technicianController.deleteTechnician))
+router.delete(
+  '/:techId',
+  authenticate,
+  authorize(USER_ROLES.ADMIN),
+  asyncHandler(technicianController.deleteTechnician)
+)
 
 export default router
