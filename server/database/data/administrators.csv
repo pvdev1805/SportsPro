@@ -1,3 +1,2 @@
-username,password
-admin,AdminPass123!
-support_admin,SupportPass123!
+username,user_id
+admin,1

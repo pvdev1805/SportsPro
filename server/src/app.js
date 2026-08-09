@@ -2,6 +2,8 @@ import express from 'express'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import swaggerUi from 'swagger-ui-express'
+import cookieParser from 'cookie-parser'
+
 import { swaggerSpec } from './config/swagger.js'
 
 import routes from './routes/index.routes.js'
@@ -18,8 +20,10 @@ app.set('views', path.join(__dirname, '../../client/views'))
 
 app.use(express.static(path.join(__dirname, '../../client/public')))
 
+// Middleware to parse JSON and URL-encoded data from incoming requests
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
 
 app.use((req, res, next) => {
   res.setHeader('X-App-Instance', process.env.INSTANCE_NAME || 'local')

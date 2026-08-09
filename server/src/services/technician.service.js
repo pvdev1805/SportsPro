@@ -1,8 +1,19 @@
-import Technician from '../models/technician.model.js'
+import sequelize from '../config/database.js'
+import { Technician, User } from '../models/index.js'
+import { hashPassword } from '../security/password.js'
 import { ConflictError, NotFoundError } from '../utils/app-error.js'
+
+const technicianIncludes = [
+  {
+    model: User,
+    as: 'user',
+    attributes: ['userId', 'email', 'isActive']
+  }
+]
 
 const getAllTechnicians = async () => {
   const technicians = await Technician.findAll({
+    include: technicianIncludes,
     order: [
       ['firstName', 'ASC'],
       ['lastName', 'ASC']
@@ -12,8 +23,11 @@ const getAllTechnicians = async () => {
   return technicians
 }
 
-const getTechnicianById = async (techId) => {
-  const technician = await Technician.findByPk(techId)
+const getTechnicianById = async (techId, options = {}) => {
+  const technician = await Technician.findByPk(techId, {
+    include: technicianIncludes,
+    ...options
+  })
 
   if (!technician) {
     throw new NotFoundError(`Technician with ID "${techId}" not found`)
@@ -23,45 +37,83 @@ const getTechnicianById = async (techId) => {
 }
 
 const createTechnician = async (technicianData) => {
-  const existingTechnician = await Technician.findOne({
+  const email = technicianData.email.trim().toLowerCase()
+
+  const existingUser = await User.findOne({
     where: {
-      email: technicianData.email
+      email
     }
   })
 
-  if (existingTechnician) {
-    throw new ConflictError(`Technician with email "${technicianData.email}" already exists`)
+  if (existingUser) {
+    throw new ConflictError(`User with email "${technicianData.email}" already exists`)
   }
 
-  const { firstName, lastName, email, phone, password } = technicianData
+  const passwordHash = await hashPassword(technicianData.password)
 
-  const technician = await Technician.create({ firstName, lastName, email, phone, password })
+  return sequelize.transaction(async (transaction) => {
+    const user = await User.create(
+      {
+        email,
+        passwordHash,
+        role: 'technician',
+        isActive: true
+      },
+      { transaction }
+    )
 
-  return technician
+    const technician = await Technician.create(
+      {
+        userId: user.userId,
+        firstName: technicianData.firstName,
+        lastName: technicianData.lastName,
+        phone: technicianData.phone
+      },
+      { transaction }
+    )
+
+    return getTechnicianById(technician.techId, { transaction })
+  })
 }
 
 const updateTechnician = async (techId, technicianData) => {
-  const technician = await getTechnicianById(techId)
+  return sequelize.transaction(async (transaction) => {
+    const technician = await getTechnicianById(techId, { transaction })
 
-  const updateData = {
-    firstName: technicianData.firstName,
-    lastName: technicianData.lastName,
-    email: technicianData.email,
-    phone: technicianData.phone,
-    password: technicianData.password
-  }
+    const updateData = {
+      firstName: technicianData.firstName,
+      lastName: technicianData.lastName,
+      phone: technicianData.phone
+    }
 
-  await technician.update(updateData)
+    await technician.update(updateData, { transaction })
 
-  return technician
+    if (technicianData.email) {
+      await technician.user.update(
+        {
+          email: technicianData.email
+        },
+        { transaction }
+      )
+    }
+
+    return getTechnicianById(techId, { transaction })
+  })
 }
 
 const deleteTechnician = async (techId) => {
-  const technician = await getTechnicianById(techId)
+  return sequelize.transaction(async (transaction) => {
+    const technician = await getTechnicianById(techId, { transaction })
 
-  await technician.destroy()
+    await technician.user.update(
+      {
+        isActive: false
+      },
+      { transaction }
+    )
 
-  return technician
+    return getTechnicianById(techId, { transaction })
+  })
 }
 
 const technicianService = {

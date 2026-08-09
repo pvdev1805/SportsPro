@@ -1,0 +1,15 @@
+user_id,email,password_hash,role,is_active,created_at,updated_at
+1,admin@sportspro.com,$2a$12$xyo8VHBnkgAsMpuDYbN9xuzsNOHEVFWiU4DAnfZS/zXsaU0NbRiIq,admin,True,2026-01-01 00:00:00,2026-01-01 00:00:00
+2,andrew.wilson@sportspro.com,$2a$12$rnnFsSckVZcCF11rRWE.HetKCCRe9aNUCJtDmvKF6BUJTQofy.xZW,technician,True,2026-01-01 00:00:00,2026-01-01 00:00:00
+3,emily.brown@sportspro.com,$2a$12$V2SJN5OpzG8rfoN6qZb9AezkcKk7ECDNVkqkYdHftmP5pML2hUREO,technician,True,2026-01-01 00:00:00,2026-01-01 00:00:00
+4,michael.davis@sportspro.com,$2a$12$bY6bs/2lBu63RaDM76w22uolgv9v8S9QHxa3TuzfeYI4HgiqUd4c2,technician,True,2026-01-01 00:00:00,2026-01-01 00:00:00
+5,sophie.lehman@sportspro.com,$2a$12$4M9MAU4Ugtl3lK6s3A9OheezH/eXhHExEm/rVmXnmaNki.r5QtvTG,technician,True,2026-01-01 00:00:00,2026-01-01 00:00:00
+6,oliver.martin@sportspro.com,$2a$12$eZEgBayoHqV0rNyV4N07u.vyA/KJiMZ4aJpbRAShGxgw94IXBTZ.a,technician,True,2026-01-01 00:00:00,2026-01-01 00:00:00
+7,ethan.walker@example.com,$2a$12$inyV2YJroyatq1vwjngi.uR62b63UdmeMPDzURYjGlFVg5CJJY6Da,customer,True,2026-01-01 00:00:00,2026-01-01 00:00:00
+8,chloe.bennett@example.com,$2a$12$JjZ4eqSHCvXH6kv5kxA6C.8cMD.1MPjGo1ILJCzV34Qw4HxKHKT6q,customer,True,2026-01-01 00:00:00,2026-01-01 00:00:00
+9,liam.carter@example.com,$2a$12$DgMNZKQ6JBw23xIm.Ur/veKKz9WWhWBx7vFe3QXxLa5Q/SuKGJsnG,customer,True,2026-01-01 00:00:00,2026-01-01 00:00:00
+10,grace.thompson@example.com,$2a$12$2beGr15tV3itZHX/q4OIH.AaTDRN.Ib0C.9XJW1FetWmhUSBbbU5K,customer,True,2026-01-01 00:00:00,2026-01-01 00:00:00
+11,daniel.roberts@example.com,$2a$12$H1xe1gIipgvevQupOVCRKOuFBoPo8Vz8MlNPPXqFG1TfYUMD3dJvy,customer,True,2026-01-01 00:00:00,2026-01-01 00:00:00
+12,olivia.martin@example.com,$2a$12$jrJOs4GKJ5zfQpHu379kn.mg/D3beJDGNlKQ8AhFYeX3xzV1cCHh.,customer,True,2026-01-01 00:00:00,2026-01-01 00:00:00
+13,noah.anderson@example.com,$2a$12$Jey7GX701eo6DmwxnjbZs.O5L5QQ2TdeVx1wovMgUkRxIibaLzycy,customer,True,2026-01-01 00:00:00,2026-01-01 00:00:00
+14,emma.clarke@example.com,$2a$12$EYKG6ueWFr8DKr5aYYYHe.9MgsCKha8v1Yx8KR5WAcdMIGA5k8X2m,customer,True,2026-01-01 00:00:00,2026-01-01 00:00:00
