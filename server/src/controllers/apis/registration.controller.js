@@ -2,7 +2,7 @@ import registrationService from '../../services/registration.service.js'
 
 // GET /api/registrations/:customerId
 export const getCustomerRegistrations = async (req, res) => {
-  const { customerId } = req.params
+  const { customerId } = req.validated.params
 
   const registrations = await registrationService.getCustomerRegistrations(customerId)
 
@@ -14,7 +14,7 @@ export const getCustomerRegistrations = async (req, res) => {
 
 // POST /api/registrations
 export const createRegistration = async (req, res) => {
-  const { customerId, productCode } = req.body
+  const { customerId, productCode } = req.validated.body
 
   const registration = await registrationService.createRegistration({
     actorUserId: req.user.userId,

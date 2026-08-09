@@ -5,6 +5,8 @@ import { USER_ROLES } from '../../constants/user-roles.js'
 import authenticate from '../../middlewares/authenticate.middleware.js'
 import authorize from '../../middlewares/authorize.middleware.js'
 import authorizeCustomerAccess from '../../middlewares/customer-access.middleware.js'
+import validate from '../../middlewares/validate.middleware.js'
+import { createRegistrationSchema, customerRegistrationsSchema } from '../../validators/registration.validator.js'
 
 const router = Router()
 
@@ -43,6 +45,7 @@ router.post(
   '/',
   authenticate,
   authorize(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER),
+  validate(createRegistrationSchema),
   asyncHandler(registrationController.createRegistration)
 )
 
@@ -70,6 +73,7 @@ router.get(
   '/:customerId',
   authenticate,
   authorize(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER),
+  validate(customerRegistrationsSchema),
   authorizeCustomerAccess,
   asyncHandler(registrationController.getCustomerRegistrations)
 )
