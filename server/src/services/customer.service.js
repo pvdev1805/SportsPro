@@ -1,48 +1,50 @@
 import { Op } from 'sequelize'
-import { Country, Customer } from '../models/index.js'
-import { NotFoundError, UnauthorizedError } from '../utils/app-error.js'
+
+import sequelize from '../config/database.js'
+import { Country, Customer, User } from '../models/index.js'
+import { ConflictError, NotFoundError } from '../utils/app-error.js'
+
+const customerIncludes = [
+  {
+    model: Country,
+    as: 'country'
+  },
+  {
+    model: User,
+    as: 'user',
+    attributes: ['userId', 'email']
+  }
+]
 
 const getAllCustomers = async () => {
-  const customers = await Customer.findAll({
-    include: {
-      model: Country,
-      as: 'country'
-    },
+  return Customer.findAll({
+    include: customerIncludes,
     order: [
       ['firstName', 'ASC'],
       ['lastName', 'ASC']
     ]
   })
-
-  return customers
 }
 
 const searchCustomersByLastName = async (lastName) => {
-  const customers = await Customer.findAll({
+  return Customer.findAll({
     where: {
       lastName: {
         [Op.iLike]: `%${lastName}%`
       }
     },
-    include: {
-      model: Country,
-      as: 'country'
-    },
+    include: customerIncludes,
     order: [
       ['firstName', 'ASC'],
       ['lastName', 'ASC']
     ]
   })
-
-  return customers
 }
 
-const getCustomerById = async (customerId) => {
+const getCustomerById = async (customerId, options = {}) => {
   const customer = await Customer.findByPk(customerId, {
-    include: {
-      model: Country,
-      as: 'country'
-    }
+    include: customerIncludes,
+    ...options
   })
 
   if (!customer) {
@@ -53,47 +55,84 @@ const getCustomerById = async (customerId) => {
 }
 
 const updateCustomer = async (customerId, customerData) => {
-  const customer = await getCustomerById(customerId)
+  return sequelize.transaction(async (transaction) => {
+    const customer = await getCustomerById(customerId, { transaction })
 
-  const updateData = {
-    firstName: customerData.firstName,
-    lastName: customerData.lastName,
-    address: customerData.address,
-    city: customerData.city,
-    state: customerData.state,
-    postalCode: customerData.postalCode,
-    countryCode: customerData.countryCode,
-    phone: customerData.phone,
-    email: customerData.email
-  }
+    const customerUpdateData = {}
 
-  if (customerData.password) {
-    updateData.password = customerData.password
-  }
+    if (customerData.firstName !== undefined) {
+      customerUpdateData.firstName = customerData.firstName
+    }
 
-  await customer.update(updateData)
+    if (customerData.lastName !== undefined) {
+      customerUpdateData.lastName = customerData.lastName
+    }
 
-  return customer
-}
+    if (customerData.address !== undefined) {
+      customerUpdateData.address = customerData.address
+    }
 
-const loginCustomer = async (email) => {
-  const customer = await Customer.findOne({
-    where: { email }
+    if (customerData.city !== undefined) {
+      customerUpdateData.city = customerData.city
+    }
+
+    if (customerData.state !== undefined) {
+      customerUpdateData.state = customerData.state
+    }
+
+    if (customerData.postalCode !== undefined) {
+      customerUpdateData.postalCode = customerData.postalCode
+    }
+
+    if (customerData.countryCode !== undefined) {
+      const country = await Country.findByPk(customerData.countryCode, { transaction })
+
+      if (!country) {
+        throw new NotFoundError(`Country with code "${customerData.countryCode}" not found`)
+      }
+
+      customerUpdateData.countryCode = customerData.countryCode
+    }
+
+    if (customerData.phone !== undefined) {
+      customerUpdateData.phone = customerData.phone
+    }
+
+    if (Object.keys(customerUpdateData).length > 0) {
+      await customer.update(customerUpdateData, { transaction })
+    }
+
+    if (customerData.email !== undefined) {
+      const existingUser = await User.findOne({
+        where: {
+          email: customerData.email
+        },
+        transaction
+      })
+
+      if (existingUser && existingUser.userId !== customer.userId) {
+        throw new ConflictError(`User with email "${customerData.email}" already exists`)
+      }
+
+      await customer.user.update(
+        {
+          email: customerData.email
+        },
+        {
+          transaction
+        }
+      )
+    }
+
+    return getCustomerById(customerId, { transaction })
   })
-
-  if (!customer) {
-    throw new UnauthorizedError(`Customer with email "${email}" is not registered`)
-  }
-
-  return customer
 }
 
 const customerService = {
   getAllCustomers,
   searchCustomersByLastName,
   getCustomerById,
-  updateCustomer,
-  loginCustomer
+  updateCustomer
 }
 
 export default customerService

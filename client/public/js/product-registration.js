@@ -1,168 +1,107 @@
+import { requireRole } from './auth/auth-guard.js'
 import { API_ROUTES } from './constants/routes.js'
 import { apiRequest } from './utils/api.js'
 import { showError } from './utils/notification.js'
 
-const CURRENT_CUSTOMER_KEY = 'currentCustomer'
+import { compactValidationErrors, keepFirstErrorPerField, validateRequired } from './validation/form-validation.js'
 
-const loginTitle = document.querySelector('.customer-login-title')
-const loginPanel = document.querySelector('.login-panel')
-const registrationPanel = document.querySelector('.registration-panel')
-const successPanel = document.querySelector('.success-panel')
+import { clearFieldErrors, focusFirstInvalidField, showFieldErrors } from './validation/form-errors.js'
 
-const loginForm = document.querySelector('#customer-login-form')
 const registrationForm = document.querySelector('#product-registration-form')
-const registerAnotherButton = document.querySelector('#register-another-btn')
-const logoutButton = document.querySelector('#logout-btn')
 
-const emailInput = document.querySelector('#email')
+const registrationPanel = document.querySelector('.registration-panel')
+
+const successPanel = document.querySelector('#registration-success')
+
+const errorElement = document.querySelector('#registration-error')
+
 const productSelect = document.querySelector('#productCode')
-const customerNameElement = document.querySelector('.customer-name')
-const successMessageElement = document.querySelector('.registration-success-message')
 
-let currentCustomer = null
+const customerNameElement = document.querySelector('#customer-name')
 
-const showPanel = (panel) => {
-  panel.classList.remove('hidden')
+const successMessageElement = document.querySelector('#registration-success-message')
+
+const registerAnotherButton = document.querySelector('#register-another-btn')
+
+const showPageError = (message) => {
+  errorElement.textContent = message
+  errorElement.hidden = false
 }
 
-const hidePanel = (panel) => {
-  panel.classList.add('hidden')
+const clearPageError = () => {
+  errorElement.textContent = ''
+  errorElement.hidden = true
 }
 
-const saveCurrentCustomer = (customer) => {
-  sessionStorage.setItem(CURRENT_CUSTOMER_KEY, JSON.stringify(customer))
-}
+const loadCustomerProfile = async () => {
+  const result = await apiRequest(API_ROUTES.PROFILE, {}, 'Failed to load customer profile')
 
-const clearCurrentCustomer = () => {
-  sessionStorage.removeItem(CURRENT_CUSTOMER_KEY)
-}
+  const customerProfile = result.data?.profile
 
-const getCurrentCustomer = () => {
-  const storedCustomer = sessionStorage.getItem(CURRENT_CUSTOMER_KEY)
-
-  if (!storedCustomer) {
-    return null
+  if (!customerProfile) {
+    throw new Error('Customer profile could not be loaded')
   }
 
-  try {
-    return JSON.parse(storedCustomer)
-  } catch (error) {
-    console.error('Error parsing stored customer:', error)
-    sessionStorage.removeItem(CURRENT_CUSTOMER_KEY)
-    return null
-  }
-}
-
-const setCustomerDisplay = (customer) => {
-  customerNameElement.textContent = ` ${customer.firstName} ${customer.lastName}`
+  customerNameElement.textContent = `${customerProfile.firstName} ${customerProfile.lastName}`
 }
 
 const renderProducts = (products) => {
-  productSelect.innerHTML = ''
+  productSelect.replaceChildren()
 
-  const placeholderOption = document.createElement('option')
-  placeholderOption.value = ''
-  placeholderOption.textContent = '-- Select a Product --'
-  productSelect.appendChild(placeholderOption)
+  const placeholder = document.createElement('option')
 
-  products.forEach((product) => {
+  placeholder.value = ''
+  placeholder.textContent = '-- Select a Product --'
+
+  productSelect.appendChild(placeholder)
+
+  for (const product of products) {
     const option = document.createElement('option')
+
     option.value = product.productCode
     option.textContent = `${product.productCode} - ${product.name}`
+
     productSelect.appendChild(option)
-  })
+  }
 }
 
 const loadProducts = async () => {
-  try {
-    const result = await apiRequest(API_ROUTES.PRODUCTS, {}, 'Failed to load products')
-    renderProducts(result.data || [])
-  } catch (error) {
-    console.error('Error loading products:', error)
-    showError(error.message)
-  }
+  const result = await apiRequest(API_ROUTES.PRODUCTS, {}, 'Failed to load products')
+
+  renderProducts(result.data ?? [])
 }
 
-const restoreSession = () => {
-  const storedCustomer = getCurrentCustomer()
-
-  if (!storedCustomer) {
-    hidePanel(registrationPanel)
-    hidePanel(successPanel)
-    showPanel(loginPanel)
-    return
-  }
-
-  currentCustomer = storedCustomer
-  setCustomerDisplay(currentCustomer)
-
-  hidePanel(loginPanel)
-  hidePanel(successPanel)
-  showPanel(registrationPanel)
-}
-
-const handleCustomerLogin = async (event) => {
-  event.preventDefault()
-
-  const email = emailInput.value.trim()
-
-  if (!email) {
-    showError('Please enter your email')
-    return
-  }
-
-  try {
-    const result = await apiRequest(
-      API_ROUTES.CUSTOMER_LOGIN,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email })
-      },
-      'Failed to login customer'
-    )
-
-    currentCustomer = result.data
-    saveCurrentCustomer(currentCustomer)
-    setCustomerDisplay(currentCustomer)
-
-    hidePanel(loginTitle)
-    hidePanel(loginPanel)
-    hidePanel(successPanel)
-    showPanel(registrationPanel)
-  } catch (error) {
-    console.error('Error logging in customer:', error)
-    showError(error.message)
-  }
+const validateRegistrationForm = () => {
+  return keepFirstErrorPerField(
+    compactValidationErrors([validateRequired('productCode', productSelect.value, 'Product')])
+  )
 }
 
 const handleProductRegistration = async (event) => {
   event.preventDefault()
 
-  if (!currentCustomer) {
-    showError('Please login first')
+  clearFieldErrors(registrationForm)
+
+  const validationErrors = validateRegistrationForm()
+
+  if (validationErrors.length > 0) {
+    showFieldErrors(registrationForm, validationErrors)
+
+    focusFirstInvalidField(registrationForm, validationErrors)
+
     return
   }
+
+  clearPageError()
 
   const productCode = productSelect.value
-
-  if (!productCode) {
-    showError('Please select a product')
-    return
-  }
 
   try {
     const result = await apiRequest(
       API_ROUTES.REGISTRATIONS,
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({
-          customerId: currentCustomer.customerId,
           productCode
         })
       },
@@ -170,54 +109,61 @@ const handleProductRegistration = async (event) => {
     )
 
     const registeredProductName =
-      result.data?.product?.name || productSelect.selectedOptions[0]?.textContent || productCode
+      result.data?.product?.name ?? productSelect.selectedOptions[0]?.textContent ?? productCode
 
     successMessageElement.textContent = `Product (${registeredProductName}) was registered successfully.`
 
-    hidePanel(loginPanel)
-    hidePanel(registrationPanel)
-    showPanel(successPanel)
+    registrationPanel.hidden = true
+    successPanel.hidden = false
   } catch (error) {
     console.error('Error registering product:', error)
+
     showError(error.message)
   }
 }
 
+const handleProductChange = () => {
+  const fieldError = registrationForm.querySelector('#productCode-error')
+
+  if (fieldError) {
+    fieldError.textContent = ''
+    fieldError.hidden = true
+  }
+
+  productSelect.removeAttribute('aria-invalid')
+
+  productSelect.removeAttribute('aria-describedby')
+}
+
 const handleRegisterAnother = () => {
-  hidePanel(successPanel)
-  showPanel(registrationPanel)
   productSelect.value = ''
+
+  successPanel.hidden = true
+  registrationPanel.hidden = false
+
+  clearPageError()
 }
 
-const handleLogout = () => {
-  currentCustomer = null
-  clearCurrentCustomer()
+const init = async () => {
+  try {
+    const authState = await requireRole('customer')
 
-  emailInput.value = ''
-  productSelect.value = ''
-  successMessageElement.textContent = 'Product registered successfully.'
+    if (!authState) {
+      return
+    }
 
-  hidePanel(loginTitle)
-  hidePanel(registrationPanel)
-  hidePanel(successPanel)
-  showPanel(loginPanel)
+    await Promise.all([loadCustomerProfile(), loadProducts()])
+
+    registrationForm.addEventListener('submit', handleProductRegistration)
+
+    productSelect.addEventListener('change', handleProductChange)
+
+    registerAnotherButton.addEventListener('click', handleRegisterAnother)
+  } catch (error) {
+    console.error('Unable to initialize product registration:', error)
+
+    showPageError(error.message || 'Unable to initialize product registration.')
+  }
 }
 
-if (loginForm) {
-  loginForm.addEventListener('submit', handleCustomerLogin)
-}
-
-if (registrationForm) {
-  registrationForm.addEventListener('submit', handleProductRegistration)
-}
-
-if (registerAnotherButton) {
-  registerAnotherButton.addEventListener('click', handleRegisterAnother)
-}
-
-if (logoutButton) {
-  logoutButton.addEventListener('click', handleLogout)
-}
-
-loadProducts()
-restoreSession()
+init()

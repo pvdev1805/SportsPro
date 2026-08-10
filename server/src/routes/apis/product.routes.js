@@ -1,6 +1,15 @@
 import { Router } from 'express'
 import * as productController from '../../controllers/apis/product.controller.js'
 import asyncHandler from '../../utils/async-handler.js'
+import { USER_ROLES } from '../../constants/user-roles.js'
+import authenticate from '../../middlewares/authenticate.middleware.js'
+import authorize from '../../middlewares/authorize.middleware.js'
+import validate from '../../middlewares/validate.middleware.js'
+import {
+  createProductSchema,
+  productCodeParamsOnlySchema,
+  updateProductSchema
+} from '../../validators/product.validator.js'
 
 const router = Router()
 
@@ -11,13 +20,24 @@ const router = Router()
  *   tags:
  *    - Products
  *   summary: Retrieve all products
+ *   security:
+ *    - bearerAuth: []
  *   responses:
  *    200:
  *     description: A list of products
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/ProductListResponse'
  *    500:
  *     description: Internal server error
  */
-router.get('/', asyncHandler(productController.getAllProducts))
+router.get(
+  '/',
+  authenticate,
+  authorize(USER_ROLES.ADMIN, USER_ROLES.TECHNICIAN, USER_ROLES.CUSTOMER),
+  asyncHandler(productController.getAllProducts)
+)
 
 /**
  * @swagger
@@ -26,6 +46,8 @@ router.get('/', asyncHandler(productController.getAllProducts))
  *   tags:
  *    - Products
  *   summary: Retrieve a product by its code
+ *   security:
+ *    - bearerAuth: []
  *   parameters:
  *    - in: path
  *      name: productCode
@@ -36,12 +58,22 @@ router.get('/', asyncHandler(productController.getAllProducts))
  *   responses:
  *    200:
  *     description: The requested product
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/ProductResponse'
  *    404:
  *     description: Product not found
  *    500:
  *     description: Internal server error
  */
-router.get('/:productCode', asyncHandler(productController.getProductByCode))
+router.get(
+  '/:productCode',
+  authenticate,
+  authorize(USER_ROLES.ADMIN, USER_ROLES.TECHNICIAN, USER_ROLES.CUSTOMER),
+  validate(productCodeParamsOnlySchema),
+  asyncHandler(productController.getProductByCode)
+)
 
 /**
  * @swagger
@@ -50,6 +82,8 @@ router.get('/:productCode', asyncHandler(productController.getProductByCode))
  *   tags:
  *    - Products
  *   summary: Create a new product
+ *   security:
+ *    - bearerAuth: []
  *   requestBody:
  *    required: true
  *    content:
@@ -59,20 +93,32 @@ router.get('/:productCode', asyncHandler(productController.getProductByCode))
  *   responses:
  *    201:
  *     description: The created product
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/ProductMutationResponse'
  *    400:
  *     description: Bad request
  *    500:
  *     description: Internal server error
  */
-router.post('/', asyncHandler(productController.createProduct))
+router.post(
+  '/',
+  authenticate,
+  authorize(USER_ROLES.ADMIN),
+  validate(createProductSchema),
+  asyncHandler(productController.createProduct)
+)
 
 /**
  * @swagger
  * /api/products/{productCode}:
- *  put:
+ *  patch:
  *   tags:
  *    - Products
- *   summary: Update a product by its code
+ *   summary: Partially update a product by its code
+ *   security:
+ *    - bearerAuth: []
  *   parameters:
  *    - in: path
  *      name: productCode
@@ -89,12 +135,22 @@ router.post('/', asyncHandler(productController.createProduct))
  *   responses:
  *    200:
  *     description: The updated product
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/ProductMutationResponse'
  *    404:
  *     description: Product not found
  *    500:
  *     description: Internal server error
  */
-router.put('/:productCode', asyncHandler(productController.updateProduct))
+router.patch(
+  '/:productCode',
+  authenticate,
+  authorize(USER_ROLES.ADMIN),
+  validate(updateProductSchema),
+  asyncHandler(productController.updateProduct)
+)
 
 /**
  * @swagger
@@ -103,6 +159,8 @@ router.put('/:productCode', asyncHandler(productController.updateProduct))
  *   tags:
  *    - Products
  *   summary: Delete a product by its code
+ *   security:
+ *    - bearerAuth: []
  *   parameters:
  *    - in: path
  *      name: productCode
@@ -113,11 +171,21 @@ router.put('/:productCode', asyncHandler(productController.updateProduct))
  *   responses:
  *    200:
  *     description: The deleted product
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/MessageResponse'
  *    404:
  *     description: Product not found
  *    500:
  *     description: Internal server error
  */
-router.delete('/:productCode', asyncHandler(productController.deleteProduct))
+router.delete(
+  '/:productCode',
+  authenticate,
+  authorize(USER_ROLES.ADMIN),
+  validate(productCodeParamsOnlySchema),
+  asyncHandler(productController.deleteProduct)
+)
 
 export default router

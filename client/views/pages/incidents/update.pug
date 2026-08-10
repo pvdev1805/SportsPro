@@ -3,88 +3,91 @@ extends ../../layouts/default.pug
 block content
   .main-panel
     .header-section
-      h2 Update Incident
-      a.btn.btn-home(href="/") Home
+      h2#incident-update-title Incident Details
+      a.btn.btn-home(href="/incidents") Back to Incidents
 
-    // Technician Selection
-    .technician-panel.mb-4
-      h3 Select Technician
-      .form-row
-        .form-group.flex-grow
-          label(for="technician") Technician:
-          select#technician(name="technician")
-            option(value="") -- Select a Technician --
-            option(value="1") John Doe (john.doe@sportspro.com)
-            option(value="2") Jane Smith (jane.smith@sportspro.com)
-            option(
-              selected=""
-              value="3"
-              ) Mike Johnson (mike.johnson@sportspro.com)
-            // Additional technicians to be added by students
-        .form-group
-          button.btn.btn-primary.mt-auto(type="button") Get Incidents
+    #incident-update-error.alert.alert-danger(
+      role="alert"
+      aria-live="polite"
+      hidden
+    )
 
-    // Assigned Incidents List
-    .incidents-panel.mb-4
-      h3 Select Incident
-      .table-container
-        table
-          thead
-            tr
-              th ID
-              th Customer
-              th Product
-              th Date Opened
-              th Title
-              th Action
-          tbody
-            // Sample incident data - students will replace with dynamic data
-            tr
-              td 3
-              td Michael Chen
-              td TEAM10
-              td 2023-03-20
-              td Report generation failure
-              td
-                button.btn.btn-primary(type="button") Select
+    #incident-loading
+      p Loading incident...
 
-    // Update Incident Form (Initially hidden - shown after selecting an incident)
-    .update-panel
-      h3 Update Incident
-      .incident-info.mb-4
-        .detail-row
-          .detail-label Incident ID:
-          .detail-value 3
-        .detail-row
-          .detail-label Customer:
-          .detail-value Michael Chen (michael@example.com)
-        .detail-row
-          .detail-label Product:
-          .detail-value TEAM10 (Team Manager Version 1.0)
-        .detail-row
-          .detail-label Date Opened:
-          .detail-value 2023-03-20
-        .detail-row
-          .detail-label Title:
-          .detail-value Report generation failure
-      .form-group
-        label(for="description") Description:
-        textarea#description(
-          rows="5"
-          name="description"
-          )
-          | Unable to generate end-of-season statistics report. The application crashes when attempting to run reports. Customer has tried reinstalling the application without success. Issue occurs on both Windows 10 and 11 machines.
-      .form-group.checkbox-group
-        input#closeIncident(
-          name="closeIncident"
-          type="checkbox"
-          )
-        label(for="closeIncident") Close this incident
-      .button-group
-        button.btn.btn-primary(type="submit") Update Incident
-        button.btn.btn-secondary(type="button") Cancel
+    #incident-content(hidden)
+      .incident-details-panel.mb-4
+        h3 Incident Information
 
-    // Confirmation Message (Initially hidden - shown after update)
-    .success-panel.mt-4.hidden
-      .alert.alert-success
-        p Incident #3 was updated successfully.
+        .incident-details
+          .detail-row
+            .detail-label Incident ID:
+            .detail-value#incident-id
+
+          .detail-row
+            .detail-label Customer:
+            .detail-value#incident-customer
+
+          .detail-row
+            .detail-label Technician:
+            .detail-value#incident-technician
+
+          .detail-row
+            .detail-label Status:
+            .detail-value#incident-status
+
+          .detail-row
+            .detail-label Date Opened:
+            .detail-value#incident-date-opened
+
+          .detail-row
+            .detail-label Date Closed:
+            .detail-value#incident-date-closed
+
+      .update-panel
+        h3#incident-form-title Update Incident
+
+        form#incident-update-form(novalidate)
+          .form-group
+            label(for="productCode") Product:
+            select#productCode(
+              name="productCode"
+              required
+            )
+              option(value="") Loading products...
+
+          .form-group
+            label(for="title") Title:
+            input#title(
+              name="title"
+              type="text"
+              required
+            )
+
+          .form-group
+            label(for="description") Description:
+            textarea#description(
+              name="description"
+              rows="6"
+              required
+            )
+
+          #content-update-actions.button-group
+            button#save-incident-button.btn.btn-primary(
+              type="submit"
+            ) Save Changes
+
+      #status-panel.update-panel.mt-4(hidden)
+        h3 Incident Status
+
+        p#status-description.mb-3
+
+        button#status-update-button.btn.btn-primary(
+          type="button"
+        )
+
+block scripts
+  script(
+    src="/js/incident-update.js"
+    type="module"
+  )

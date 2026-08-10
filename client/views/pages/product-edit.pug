@@ -1,18 +1,54 @@
 extends ../layouts/default.pug
 
-include ../mixins/product-form.pug
-
 block content
   .main-panel
     .form-panel
       h3 Edit Product
 
-      form#product-edit-form(data-product-code=product.productCode)
-        +productForm(product, true)
+      #product-edit-error.alert.alert-danger(
+        role="alert"
+        hidden
+      )
+
+      form#product-edit-form(novalidate)
+        .form-group
+          label(for="name") Name
+          input#name(
+            type="text"
+            name="name"
+            maxlength="50"
+            required
+          )
+
+        .form-group
+          label(for="version") Version
+          input#version(
+            type="number"
+            name="version"
+            step="0.1"
+            min="0.1"
+            required
+          )
+
+        .form-group
+          label(for="releaseDate") Release Date
+          input#releaseDate(
+            type="date"
+            name="releaseDate"
+            required
+          )
 
         .button-group
-          button.btn.btn-primary(type="submit") Save Changes
-          a.btn(href="/products") Cancel
+          button.btn.btn-primary(
+            type="submit"
+          ) Save Changes
+
+          a.btn.btn-secondary(
+            href="/products"
+          ) Cancel
 
 block scripts
-  script(src="/js/product-edit.js" type="module")
+  script(
+    src="/js/product-edit.js"
+    type="module"
+  )

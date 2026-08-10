@@ -1,6 +1,16 @@
 import { Router } from 'express'
 import * as customerController from '../../controllers/apis/customer.controller.js'
 import asyncHandler from '../../utils/async-handler.js'
+import { USER_ROLES } from '../../constants/user-roles.js'
+import authenticate from '../../middlewares/authenticate.middleware.js'
+import authorize from '../../middlewares/authorize.middleware.js'
+import authorizeCustomerAccess from '../../middlewares/customer-access.middleware.js'
+import validate from '../../middlewares/validate.middleware.js'
+import {
+  customerIdParamsOnlySchema,
+  searchCustomersSchema,
+  updateCustomerSchema
+} from '../../validators/customer.validator.js'
 
 const router = Router()
 
@@ -11,22 +21,17 @@ const router = Router()
  *     tags:
  *       - Customers
  *     summary: Retrieve all customers
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: A list of customers
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Customer'
+ *               $ref: '#/components/schemas/CustomerListResponse'
  */
-router.get('/', asyncHandler(customerController.getAllCustomers))
+router.get('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(customerController.getAllCustomers))
 
 /**
  * @swagger
@@ -35,6 +40,8 @@ router.get('/', asyncHandler(customerController.getAllCustomers))
  *     tags:
  *       - Customers
  *     summary: Search customers by last name
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: lastName
@@ -45,36 +52,18 @@ router.get('/', asyncHandler(customerController.getAllCustomers))
  *     responses:
  *       200:
  *         description: Matching customers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CustomerListResponse'
  */
-router.get('/search', asyncHandler(customerController.searchCustomers))
-
-/**
- * @swagger
- * /api/customers/login:
- *   post:
- *     tags:
- *       - Customers
- *     summary: Customer login using email
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 example: daniel.roberts@example.com
- *     responses:
- *       200:
- *         description: Customer login successful
- *       401:
- *         description: Customer is not registered
- */
-router.post('/login', asyncHandler(customerController.loginCustomer))
+router.get(
+  '/search',
+  authenticate,
+  authorize(USER_ROLES.ADMIN),
+  validate(searchCustomersSchema),
+  asyncHandler(customerController.searchCustomers)
+)
 
 /**
  * @swagger
@@ -83,6 +72,8 @@ router.post('/login', asyncHandler(customerController.loginCustomer))
  *     tags:
  *       - Customers
  *     summary: Retrieve customer details by ID
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: customerId
@@ -93,18 +84,31 @@ router.post('/login', asyncHandler(customerController.loginCustomer))
  *     responses:
  *       200:
  *         description: Customer details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CustomerResponse'
  *       404:
  *         description: Customer not found
  */
-router.get('/:customerId', asyncHandler(customerController.getCustomerById))
+router.get(
+  '/:customerId',
+  authenticate,
+  authorize(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER),
+  validate(customerIdParamsOnlySchema),
+  authorizeCustomerAccess,
+  asyncHandler(customerController.getCustomerById)
+)
 
 /**
  * @swagger
  * /api/customers/{customerId}:
- *   put:
+ *   patch:
  *     tags:
  *       - Customers
- *     summary: Update customer information
+ *     summary: Partially update customer information
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: customerId
@@ -121,9 +125,20 @@ router.get('/:customerId', asyncHandler(customerController.getCustomerById))
  *     responses:
  *       200:
  *         description: Customer updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CustomerMutationResponse'
  *       404:
  *         description: Customer not found
  */
-router.put('/:customerId', asyncHandler(customerController.updateCustomer))
+router.patch(
+  '/:customerId',
+  authenticate,
+  authorize(USER_ROLES.ADMIN, USER_ROLES.CUSTOMER),
+  validate(updateCustomerSchema),
+  authorizeCustomerAccess,
+  asyncHandler(customerController.updateCustomer)
+)
 
 export default router

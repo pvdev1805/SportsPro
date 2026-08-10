@@ -11,6 +11,9 @@ services:
       POSTGRES_USER: sportspro_user
       POSTGRES_PASSWORD: sportspro_password
 
+    ports:
+      - '5433:5432'
+
     volumes:
       - sportspro_database_data:/var/lib/postgresql
       - ./server/database:/docker-entrypoint-initdb.d:ro
@@ -36,6 +39,11 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
+
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_ACCESS_EXPIRES_IN: ${JWT_ACCESS_EXPIRES_IN:-15m}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
 
       DB_HOST: database
       DB_PORT: 5432
@@ -64,6 +72,11 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
+
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_ACCESS_EXPIRES_IN: ${JWT_ACCESS_EXPIRES_IN:-15m}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
 
       DB_HOST: database
       DB_PORT: 5432

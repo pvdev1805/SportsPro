@@ -14,17 +14,29 @@ CREATE TABLE products (
   release_date DATE NOT NULL
 );
 
+CREATE TABLE users (
+  user_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'technician', 'customer')),
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE technicians (
   tech_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  user_id INTEGER NOT NULL UNIQUE,
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,
-  email VARCHAR(100) NOT NULL UNIQUE,
   phone VARCHAR(20) NOT NULL,
-  password VARCHAR(100) NOT NULL
+
+  CONSTRAINT fk_technicians_user FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 CREATE TABLE customers (
   customer_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  user_id INTEGER NOT NULL UNIQUE,
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,
   address VARCHAR(50) NOT NULL,
@@ -33,9 +45,8 @@ CREATE TABLE customers (
   postal_code VARCHAR(20) NOT NULL,
   country_code CHAR(2) NOT NULL,
   phone VARCHAR(20) NOT NULL,
-  email VARCHAR(100) NOT NULL UNIQUE,
-  password VARCHAR(100) NOT NULL,
 
+  CONSTRAINT fk_customers_user FOREIGN KEY (user_id) REFERENCES users(user_id),
   CONSTRAINT fk_customers_country FOREIGN KEY (country_code) REFERENCES countries(country_code)
 );
 
@@ -44,6 +55,7 @@ CREATE TABLE incidents (
   customer_id INTEGER NOT NULL,
   product_code VARCHAR(10) NOT NULL,
   tech_id INTEGER,
+  status VARCHAR(20) DEFAULT 'open' NOT NULL CHECK (status IN ('open', 'assigned', 'in_progress', 'resolved', 'closed')),
   date_opened TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   date_closed TIMESTAMP,
   title VARCHAR(50) NOT NULL,
@@ -67,5 +79,18 @@ CREATE TABLE registrations (
 
 CREATE TABLE administrators (
   username VARCHAR(40) PRIMARY KEY,
-  password VARCHAR(100) NOT NULL
+  user_id INTEGER NOT NULL UNIQUE,
+
+  CONSTRAINT fk_administrators_user FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE refresh_tokens (
+  refresh_token_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  token_hash VARCHAR(255) NOT NULL UNIQUE,
+  expires_at TIMESTAMP NOT NULL,
+  revoked_at TIMESTAMP,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_refresh_tokens_user FOREIGN KEY (user_id) REFERENCES users(user_id)
 );

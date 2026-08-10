@@ -33,10 +33,18 @@ const createProduct = async (productData) => {
 const updateProduct = async (productCode, productData) => {
   const product = await getProductByCode(productCode)
 
-  const updateData = {
-    name: productData.name,
-    version: productData.version,
-    releaseDate: productData.releaseDate
+  const updateData = {}
+
+  if (productData.name !== undefined) {
+    updateData.name = productData.name
+  }
+
+  if (productData.version !== undefined) {
+    updateData.version = productData.version
+  }
+
+  if (productData.releaseDate !== undefined) {
+    updateData.releaseDate = productData.releaseDate
   }
 
   await product.update(updateData)

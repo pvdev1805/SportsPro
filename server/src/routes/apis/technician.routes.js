@@ -1,6 +1,15 @@
 import { Router } from 'express'
 import * as technicianController from '../../controllers/apis/technician.controller.js'
 import asyncHandler from '../../utils/async-handler.js'
+import { USER_ROLES } from '../../constants/user-roles.js'
+import authenticate from '../../middlewares/authenticate.middleware.js'
+import authorize from '../../middlewares/authorize.middleware.js'
+import validate from '../../middlewares/validate.middleware.js'
+import {
+  createTechnicianSchema,
+  technicianIdParamsOnlySchema,
+  updateTechnicianSchema
+} from '../../validators/technician.validator.js'
 
 const router = Router()
 
@@ -11,11 +20,17 @@ const router = Router()
  *     tags:
  *       - Technicians
  *     summary: Retrieve all technicians
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: A list of technicians
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TechnicianListResponse'
  */
-router.get('/', asyncHandler(technicianController.getAllTechnicians))
+router.get('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(technicianController.getAllTechnicians))
 
 /**
  * @swagger
@@ -24,6 +39,8 @@ router.get('/', asyncHandler(technicianController.getAllTechnicians))
  *     tags:
  *       - Technicians
  *     summary: Retrieve a technician by ID
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: techId
@@ -34,10 +51,20 @@ router.get('/', asyncHandler(technicianController.getAllTechnicians))
  *     responses:
  *       200:
  *         description: Technician details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TechnicianResponse'
  *       404:
  *         description: Technician not found
  */
-router.get('/:techId', asyncHandler(technicianController.getTechnicianById))
+router.get(
+  '/:techId',
+  authenticate,
+  authorize(USER_ROLES.ADMIN),
+  validate(technicianIdParamsOnlySchema),
+  asyncHandler(technicianController.getTechnicianById)
+)
 
 /**
  * @swagger
@@ -46,6 +73,8 @@ router.get('/:techId', asyncHandler(technicianController.getTechnicianById))
  *     tags:
  *       - Technicians
  *     summary: Create a technician
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -55,18 +84,30 @@ router.get('/:techId', asyncHandler(technicianController.getTechnicianById))
  *     responses:
  *       201:
  *         description: Technician created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TechnicianMutationResponse'
  *       409:
  *         description: Technician already exists
  */
-router.post('/', asyncHandler(technicianController.createTechnician))
+router.post(
+  '/',
+  authenticate,
+  authorize(USER_ROLES.ADMIN),
+  validate(createTechnicianSchema),
+  asyncHandler(technicianController.createTechnician)
+)
 
 /**
  * @swagger
  * /api/technicians/{techId}:
- *   put:
+ *   patch:
  *     tags:
  *       - Technicians
- *     summary: Update a technician by ID
+ *     summary: Partially update a technician by ID
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: techId
@@ -83,10 +124,20 @@ router.post('/', asyncHandler(technicianController.createTechnician))
  *     responses:
  *       200:
  *         description: Technician updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TechnicianMutationResponse'
  *       404:
  *         description: Technician not found
  */
-router.put('/:techId', asyncHandler(technicianController.updateTechnician))
+router.patch(
+  '/:techId',
+  authenticate,
+  authorize(USER_ROLES.ADMIN),
+  validate(updateTechnicianSchema),
+  asyncHandler(technicianController.updateTechnician)
+)
 
 /**
  * @swagger
@@ -95,6 +146,8 @@ router.put('/:techId', asyncHandler(technicianController.updateTechnician))
  *     tags:
  *       - Technicians
  *     summary: Delete a technician by ID
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: techId
@@ -105,9 +158,19 @@ router.put('/:techId', asyncHandler(technicianController.updateTechnician))
  *     responses:
  *       200:
  *         description: Technician deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MessageResponse'
  *       404:
  *         description: Technician not found
  */
-router.delete('/:techId', asyncHandler(technicianController.deleteTechnician))
+router.delete(
+  '/:techId',
+  authenticate,
+  authorize(USER_ROLES.ADMIN),
+  validate(technicianIdParamsOnlySchema),
+  asyncHandler(technicianController.deleteTechnician)
+)
 
 export default router
