@@ -20,9 +20,15 @@ const router = Router()
  *     tags:
  *       - Technicians
  *     summary: Retrieve all technicians
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: A list of technicians
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TechnicianListResponse'
  */
 router.get('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(technicianController.getAllTechnicians))
 
@@ -33,6 +39,8 @@ router.get('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(technici
  *     tags:
  *       - Technicians
  *     summary: Retrieve a technician by ID
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: techId
@@ -43,6 +51,10 @@ router.get('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(technici
  *     responses:
  *       200:
  *         description: Technician details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TechnicianResponse'
  *       404:
  *         description: Technician not found
  */
@@ -61,6 +73,8 @@ router.get(
  *     tags:
  *       - Technicians
  *     summary: Create a technician
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -70,6 +84,10 @@ router.get(
  *     responses:
  *       201:
  *         description: Technician created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TechnicianMutationResponse'
  *       409:
  *         description: Technician already exists
  */
@@ -88,6 +106,8 @@ router.post(
  *     tags:
  *       - Technicians
  *     summary: Partially update a technician by ID
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: techId
@@ -104,6 +124,10 @@ router.post(
  *     responses:
  *       200:
  *         description: Technician updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TechnicianMutationResponse'
  *       404:
  *         description: Technician not found
  */
@@ -122,6 +146,8 @@ router.patch(
  *     tags:
  *       - Technicians
  *     summary: Delete a technician by ID
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: techId
@@ -132,6 +158,10 @@ router.patch(
  *     responses:
  *       200:
  *         description: Technician deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/MessageResponse'
  *       404:
  *         description: Technician not found
  */

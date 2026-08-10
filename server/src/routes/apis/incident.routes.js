@@ -17,12 +17,50 @@ import {
 
 const router = Router()
 
-// GET /api/incidents
-// Admin: retrieve all incidents
+/**
+ * @swagger
+ * /api/incidents:
+ *   get:
+ *     tags:
+ *       - Incidents
+ *     summary: Retrieve all incidents
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of incidents
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/IncidentListResponse'
+ *       401:
+ *         description: Missing or invalid bearer token
+ *       403:
+ *         description: Administrator access required
+ */
 router.get('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(incidentController.getAllIncidents))
 
-// GET /api/incidents/assigned
-// Technician: retrieve incidents assigned to the authenticated technician
+/**
+ * @swagger
+ * /api/incidents/assigned:
+ *   get:
+ *     tags:
+ *       - Incidents
+ *     summary: Retrieve incidents assigned to the authenticated technician
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of assigned incidents
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/IncidentListResponse'
+ *       401:
+ *         description: Missing or invalid bearer token
+ *       403:
+ *         description: Technician access required
+ */
 router.get(
   '/assigned',
   authenticate,
@@ -30,13 +68,56 @@ router.get(
   asyncHandler(incidentController.getAssignedIncidents)
 )
 
-// GET /api/incidents/mine
-// Customer: retrieve incidents belonging to the authenticated customer
+/**
+ * @swagger
+ * /api/incidents/mine:
+ *   get:
+ *     tags:
+ *       - Incidents
+ *     summary: Retrieve incidents belonging to the authenticated customer
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of customer incidents
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/IncidentListResponse'
+ *       401:
+ *         description: Missing or invalid bearer token
+ *       403:
+ *         description: Customer access required
+ */
 router.get('/mine', authenticate, authorize(USER_ROLES.CUSTOMER), asyncHandler(incidentController.getMyIncidents))
 
-// POST /api/incidents
-// Admin can create for a specified customer.
-// Customer can only create for themselves.
+/**
+ * @swagger
+ * /api/incidents:
+ *   post:
+ *     tags:
+ *       - Incidents
+ *     summary: Create a new incident
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/IncidentCreateRequest'
+ *     responses:
+ *       201:
+ *         description: Incident created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/IncidentResponse'
+ *       400:
+ *         description: Invalid incident data
+ *       401:
+ *         description: Missing or invalid bearer token
+ */
 router.post(
   '/',
   authenticate,
@@ -45,10 +126,36 @@ router.post(
   asyncHandler(incidentController.createIncident)
 )
 
-// GET /api/incidents/:incidentId
-// Admin: any incident
-// Technician: assigned incident only
-// Customer: own incident only
+/**
+ * @swagger
+ * /api/incidents/{incidentId}:
+ *   get:
+ *     tags:
+ *       - Incidents
+ *     summary: Retrieve an incident by ID
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: incidentId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Incident ID
+ *     responses:
+ *       200:
+ *         description: Incident details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/IncidentResponse'
+ *       401:
+ *         description: Missing or invalid bearer token
+ *       403:
+ *         description: Access denied for this incident
+ *       404:
+ *         description: Incident not found
+ */
 router.get(
   '/:incidentId',
   authenticate,
@@ -58,10 +165,42 @@ router.get(
   asyncHandler(incidentController.getIncidentById)
 )
 
-// PATCH /api/incidents/:incidentId
-// Admin: any incident
-// Technician: assigned incident only
-// Customer: own incident only; service further restricts customer to open incidents
+/**
+ * @swagger
+ * /api/incidents/{incidentId}:
+ *   patch:
+ *     tags:
+ *       - Incidents
+ *     summary: Update an incident
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: incidentId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Incident ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/IncidentUpdateRequest'
+ *     responses:
+ *       200:
+ *         description: Incident updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/IncidentMutationResponse'
+ *       401:
+ *         description: Missing or invalid bearer token
+ *       403:
+ *         description: Access denied for this incident
+ *       404:
+ *         description: Incident not found
+ */
 router.patch(
   '/:incidentId',
   authenticate,
@@ -71,8 +210,42 @@ router.patch(
   asyncHandler(incidentController.updateIncident)
 )
 
-// PATCH /api/incidents/:incidentId/assign
-// Only administrators can assign or reassign technicians.
+/**
+ * @swagger
+ * /api/incidents/{incidentId}/assign:
+ *   patch:
+ *     tags:
+ *       - Incidents
+ *     summary: Assign or reassign a technician to an incident
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: incidentId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Incident ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/IncidentAssignRequest'
+ *     responses:
+ *       200:
+ *         description: Technician assigned successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/IncidentMutationResponse'
+ *       401:
+ *         description: Missing or invalid bearer token
+ *       403:
+ *         description: Administrator access required
+ *       404:
+ *         description: Incident or technician not found
+ */
 router.patch(
   '/:incidentId/assign',
   authenticate,
@@ -81,10 +254,42 @@ router.patch(
   asyncHandler(incidentController.assignTechnician)
 )
 
-// PATCH /api/incidents/:incidentId/status
-// Admin may update any valid incident workflow.
-// Technician may update only an incident assigned to them.
-// The service performs the assignment check again.
+/**
+ * @swagger
+ * /api/incidents/{incidentId}/status:
+ *   patch:
+ *     tags:
+ *       - Incidents
+ *     summary: Update the status of an incident
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: incidentId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Incident ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/IncidentStatusRequest'
+ *     responses:
+ *       200:
+ *         description: Incident status updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/IncidentMutationResponse'
+ *       401:
+ *         description: Missing or invalid bearer token
+ *       403:
+ *         description: Access denied for this incident
+ *       404:
+ *         description: Incident not found
+ */
 router.patch(
   '/:incidentId/status',
   authenticate,

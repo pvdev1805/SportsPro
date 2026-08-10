@@ -20,9 +20,15 @@ const router = Router()
  *   tags:
  *    - Products
  *   summary: Retrieve all products
+ *   security:
+ *    - bearerAuth: []
  *   responses:
  *    200:
  *     description: A list of products
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/ProductListResponse'
  *    500:
  *     description: Internal server error
  */
@@ -40,6 +46,8 @@ router.get(
  *   tags:
  *    - Products
  *   summary: Retrieve a product by its code
+ *   security:
+ *    - bearerAuth: []
  *   parameters:
  *    - in: path
  *      name: productCode
@@ -50,6 +58,10 @@ router.get(
  *   responses:
  *    200:
  *     description: The requested product
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/ProductResponse'
  *    404:
  *     description: Product not found
  *    500:
@@ -70,6 +82,8 @@ router.get(
  *   tags:
  *    - Products
  *   summary: Create a new product
+ *   security:
+ *    - bearerAuth: []
  *   requestBody:
  *    required: true
  *    content:
@@ -79,6 +93,10 @@ router.get(
  *   responses:
  *    201:
  *     description: The created product
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/ProductMutationResponse'
  *    400:
  *     description: Bad request
  *    500:
@@ -99,6 +117,8 @@ router.post(
  *   tags:
  *    - Products
  *   summary: Partially update a product by its code
+ *   security:
+ *    - bearerAuth: []
  *   parameters:
  *    - in: path
  *      name: productCode
@@ -115,6 +135,10 @@ router.post(
  *   responses:
  *    200:
  *     description: The updated product
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/ProductMutationResponse'
  *    404:
  *     description: Product not found
  *    500:
@@ -135,6 +159,8 @@ router.patch(
  *   tags:
  *    - Products
  *   summary: Delete a product by its code
+ *   security:
+ *    - bearerAuth: []
  *   parameters:
  *    - in: path
  *      name: productCode
@@ -145,6 +171,10 @@ router.patch(
  *   responses:
  *    200:
  *     description: The deleted product
+ *     content:
+ *      application/json:
+ *       schema:
+ *        $ref: '#/components/schemas/MessageResponse'
  *    404:
  *     description: Product not found
  *    500:
