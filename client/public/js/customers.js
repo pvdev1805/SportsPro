@@ -3,6 +3,15 @@ import { API_ROUTES } from './constants/routes.js'
 import { apiRequest } from './utils/api.js'
 import { showError, showFlashNotification } from './utils/notification.js'
 
+import {
+  compactValidationErrors,
+  keepFirstErrorPerField,
+  validateLength,
+  validateRequired
+} from './validation/form-validation.js'
+
+import { clearFieldErrors, focusFirstInvalidField, showFieldErrors } from './validation/form-errors.js'
+
 const searchForm = document.querySelector('#customer-search-form')
 
 const searchInput = document.querySelector('#customer-last-name')
@@ -60,17 +69,48 @@ const loadCustomers = async () => {
   renderCustomers(result.data)
 }
 
+const validateCustomerSearchForm = () => {
+  return keepFirstErrorPerField(
+    compactValidationErrors([
+      validateRequired('lastName', searchInput.value, 'Last name search term'),
+      validateLength('lastName', searchInput.value, {
+        label: 'Last name search term',
+        max: 50
+      })
+    ])
+  )
+}
+
 const handleSearch = async (event) => {
   event.preventDefault()
 
+  clearFieldErrors(searchForm)
+
   const lastName = searchInput.value.trim()
 
-  try {
-    if (!lastName) {
-      await loadCustomers()
-      return
-    }
+  if (!lastName) {
+    await loadCustomers()
+    return
+  }
 
+  const validationErrors = keepFirstErrorPerField(
+    compactValidationErrors([
+      validateLength('lastName', lastName, {
+        label: 'Last name search term',
+        max: 50
+      })
+    ])
+  )
+
+  if (validationErrors.length > 0) {
+    showFieldErrors(searchForm, validationErrors)
+
+    focusFirstInvalidField(searchForm, validationErrors)
+
+    return
+  }
+
+  try {
     const result = await apiRequest(
       `${API_ROUTES.CUSTOMERS}/search?lastName=${encodeURIComponent(lastName)}`,
       {},
@@ -85,6 +125,18 @@ const handleSearch = async (event) => {
   }
 }
 
+const handleSearchInput = () => {
+  const fieldError = searchForm.querySelector('#lastName-error')
+
+  if (fieldError) {
+    fieldError.textContent = ''
+    fieldError.hidden = true
+  }
+
+  searchInput.removeAttribute('aria-invalid')
+  searchInput.removeAttribute('aria-describedby')
+}
+
 const init = async () => {
   try {
     const authState = await requireRole('admin')
@@ -94,7 +146,7 @@ const init = async () => {
     }
 
     searchForm.addEventListener('submit', handleSearch)
-
+    searchForm.addEventListener('input', handleSearchInput)
     await loadCustomers()
 
     showFlashNotification()

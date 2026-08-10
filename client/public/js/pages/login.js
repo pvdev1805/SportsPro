@@ -1,6 +1,7 @@
 import { redirectAuthenticatedUser } from '../auth/auth-guard.js'
-
 import { signIn } from '../auth/auth-session.js'
+import { compactValidationErrors, validateEmail, validateRequired } from '../validation/form-validation.js'
+import { clearFieldErrors, focusFirstInvalidField, showFieldErrors } from '../validation/form-errors.js'
 
 const form = document.querySelector('#login-form')
 const emailInput = document.querySelector('#email')
@@ -23,15 +24,34 @@ const setSubmitting = (isSubmitting) => {
   submitButton.textContent = isSubmitting ? 'Signing in...' : 'Sign In'
 }
 
+const validateLoginForm = () => {
+  return compactValidationErrors([
+    validateEmail('email', emailInput.value, 'Email'),
+    validateRequired('password', passwordInput.value, 'Password')
+  ])
+}
+
 const handleSubmit = async (event) => {
   event.preventDefault()
 
   clearError()
+  clearFieldErrors(form)
+
+  const validationErrors = validateLoginForm()
+
+  if (validationErrors.length > 0) {
+    showFieldErrors(form, validationErrors)
+
+    focusFirstInvalidField(form, validationErrors)
+
+    return
+  }
+
   setSubmitting(true)
 
   try {
     await signIn({
-      email: emailInput.value,
+      email: emailInput.value.trim(),
       password: passwordInput.value
     })
 
@@ -41,6 +61,24 @@ const handleSubmit = async (event) => {
   } finally {
     setSubmitting(false)
   }
+}
+
+const handleInput = (event) => {
+  const field = event.target
+
+  if (!(field instanceof HTMLInputElement)) {
+    return
+  }
+
+  const errorElement = form.querySelector(`#${field.name}-error`)
+
+  if (errorElement) {
+    errorElement.textContent = ''
+    errorElement.hidden = true
+  }
+
+  field.removeAttribute('aria-invalid')
+  field.removeAttribute('aria-describedby')
 }
 
 const init = async () => {
@@ -55,6 +93,8 @@ const init = async () => {
   }
 
   form.addEventListener('submit', handleSubmit)
+
+  form.addEventListener('input', handleInput)
 }
 
 init()

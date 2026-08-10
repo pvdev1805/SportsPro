@@ -2,6 +2,17 @@ import { requireRole } from './auth/auth-guard.js'
 import { API_ROUTES, PAGE_ROUTES } from './constants/routes.js'
 import { apiRequest } from './utils/api.js'
 import { setFlashNotification, showError } from './utils/notification.js'
+import {
+  compactValidationErrors,
+  keepFirstErrorPerField,
+  validateDate,
+  validateLength,
+  validateOneDecimalPlace,
+  validatePositiveNumber,
+  validateRequired
+} from './validation/form-validation.js'
+
+import { clearFieldErrors, focusFirstInvalidField, showFieldErrors } from './validation/form-errors.js'
 
 const form = document.querySelector('#product-edit-form')
 
@@ -33,8 +44,60 @@ const loadProduct = async (productCode) => {
   populateForm(result.data)
 }
 
+const validateProductEditForm = () => {
+  return keepFirstErrorPerField(
+    compactValidationErrors([
+      validateRequired('name', nameInput.value, 'Product name'),
+      validateLength('name', nameInput.value, {
+        label: 'Product name',
+        max: 50
+      }),
+
+      validateRequired('version', versionInput.value, 'Product version'),
+      validatePositiveNumber('version', versionInput.value, 'Product version'),
+      validateOneDecimalPlace('version', versionInput.value, 'Product version'),
+
+      validateDate('releaseDate', releaseDateInput.value, 'Release date')
+    ])
+  )
+}
+
+const handleInput = (event) => {
+  const field = event.target
+
+  if (!(
+    field instanceof HTMLInputElement ||
+    field instanceof HTMLSelectElement ||
+    field instanceof HTMLTextAreaElement
+  )) {
+    return
+  }
+
+  const fieldError = form.querySelector(`#${field.name}-error`)
+
+  if (fieldError) {
+    fieldError.textContent = ''
+    fieldError.hidden = true
+  }
+
+  field.removeAttribute('aria-invalid')
+  field.removeAttribute('aria-describedby')
+}
+
 const handleSubmit = async (event) => {
   event.preventDefault()
+
+  clearFieldErrors(form)
+
+  const validationErrors = validateProductEditForm()
+
+  if (validationErrors.length > 0) {
+    showFieldErrors(form, validationErrors)
+
+    focusFirstInvalidField(form, validationErrors)
+
+    return
+  }
 
   const productCode = getProductCode()
 
@@ -77,6 +140,7 @@ const init = async () => {
     await loadProduct(productCode)
 
     form.addEventListener('submit', handleSubmit)
+    form.addEventListener('input', handleInput)
   } catch (error) {
     console.error('Unable to load product:', error)
 

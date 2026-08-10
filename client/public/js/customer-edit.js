@@ -3,6 +3,17 @@ import { API_ROUTES, PAGE_ROUTES } from './constants/routes.js'
 import { apiRequest } from './utils/api.js'
 import { setFlashNotification, showError } from './utils/notification.js'
 
+import {
+  compactValidationErrors,
+  keepFirstErrorPerField,
+  validateEmail,
+  validateLength,
+  validatePattern,
+  validateRequired
+} from './validation/form-validation.js'
+
+import { clearFieldErrors, focusFirstInvalidField, showFieldErrors } from './validation/form-errors.js'
+
 const form = document.querySelector('#customer-edit-form')
 
 const errorElement = document.querySelector('#customer-edit-error')
@@ -57,8 +68,113 @@ const loadCustomer = async (customerId) => {
   populateForm(result.data)
 }
 
+const validateCustomerEditForm = () => {
+  return keepFirstErrorPerField(
+    compactValidationErrors([
+      validateRequired('firstName', firstNameInput.value, 'First name'),
+      validateLength('firstName', firstNameInput.value, {
+        label: 'First name',
+        max: 50
+      }),
+
+      validateRequired('lastName', lastNameInput.value, 'Last name'),
+      validateLength('lastName', lastNameInput.value, {
+        label: 'Last name',
+        max: 50
+      }),
+
+      validateEmail('email', emailInput.value, 'Email'),
+      validateLength('email', emailInput.value, {
+        label: 'Email',
+        max: 100
+      }),
+
+      validateRequired('address', addressInput.value, 'Address'),
+      validateLength('address', addressInput.value, {
+        label: 'Address',
+        max: 50
+      }),
+
+      validateRequired('city', cityInput.value, 'City'),
+      validateLength('city', cityInput.value, {
+        label: 'City',
+        max: 50
+      }),
+
+      validateRequired('state', stateInput.value, 'State'),
+      validateLength('state', stateInput.value, {
+        label: 'State',
+        max: 50
+      }),
+
+      validateRequired('postalCode', postalCodeInput.value, 'Postal code'),
+      validateLength('postalCode', postalCodeInput.value, {
+        label: 'Postal code',
+        max: 20
+      }),
+
+      validateRequired('countryCode', countryCodeInput.value, 'Country code'),
+      validateLength('countryCode', countryCodeInput.value, {
+        label: 'Country code',
+        min: 2,
+        max: 2
+      }),
+      validatePattern('countryCode', countryCodeInput.value, {
+        label: 'Country code',
+        pattern: /^[A-Za-z]{2}$/,
+        message: 'Country code must contain letters only'
+      }),
+
+      validateRequired('phone', phoneInput.value, 'Phone number'),
+      validateLength('phone', phoneInput.value, {
+        label: 'Phone number',
+        max: 20
+      }),
+      validatePattern('phone', phoneInput.value, {
+        label: 'Phone number',
+        pattern: /^[0-9+()\-\s]+$/,
+        message: 'Phone number contains invalid characters'
+      })
+    ])
+  )
+}
+
+const handleInput = (event) => {
+  const field = event.target
+
+  if (!(
+    field instanceof HTMLInputElement ||
+    field instanceof HTMLSelectElement ||
+    field instanceof HTMLTextAreaElement
+  )) {
+    return
+  }
+
+  const fieldError = form.querySelector(`#${field.name}-error`)
+
+  if (fieldError) {
+    fieldError.textContent = ''
+    fieldError.hidden = true
+  }
+
+  field.removeAttribute('aria-invalid')
+  field.removeAttribute('aria-describedby')
+}
+
 const handleSubmit = async (event) => {
   event.preventDefault()
+
+  clearFieldErrors(form)
+
+  const validationErrors = validateCustomerEditForm()
+
+  if (validationErrors.length > 0) {
+    showFieldErrors(form, validationErrors)
+
+    focusFirstInvalidField(form, validationErrors)
+
+    return
+  }
 
   const customerId = getCustomerId()
 
@@ -110,6 +226,7 @@ const init = async () => {
     await loadCustomer(customerId)
 
     form.addEventListener('submit', handleSubmit)
+    form.addEventListener('input', handleInput)
   } catch (error) {
     console.error('Unable to load customer:', error)
 
