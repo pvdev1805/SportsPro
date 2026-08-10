@@ -224,14 +224,16 @@ const assignTechnician = async (incidentId, techId) => {
       throw new BadRequestError('Inactive technicians cannot be assigned to incidents')
     }
 
-    if (incident.status !== INCIDENT_STATUS.OPEN && incident.status !== INCIDENT_STATUS.ASSIGNED) {
-      throw new BadRequestError('Only open or assigned incidents can be assigned or reassigned')
+    if (incident.status === INCIDENT_STATUS.RESOLVED || incident.status === INCIDENT_STATUS.CLOSED) {
+      throw new BadRequestError('Resolved or closed incidents cannot be assigned')
     }
+
+    const nextStatus = incident.status === INCIDENT_STATUS.OPEN ? INCIDENT_STATUS.ASSIGNED : incident.status
 
     await incident.update(
       {
         techId: technician.techId,
-        status: INCIDENT_STATUS.ASSIGNED
+        status: nextStatus
       },
       {
         transaction
@@ -259,6 +261,10 @@ const updateIncident = async ({ incidentId, actorUserId, actorRole, productCode,
 
     if (!incident) {
       throw new NotFoundError(`Incident with ID "${parsedIncidentId}" not found`)
+    }
+
+    if (incident.status === INCIDENT_STATUS.CLOSED) {
+      throw new ForbiddenError('Closed incidents cannot be modified')
     }
 
     if (actorRole === USER_ROLES.CUSTOMER) {
@@ -404,6 +410,14 @@ const updateIncidentStatus = async ({ incidentId, actorUserId, actorRole, status
 
       if (incident.techId !== technician.techId) {
         throw new ForbiddenError('You do not have permission to update this incident')
+      }
+
+      const technicianCanTransition =
+        (incident.status === INCIDENT_STATUS.ASSIGNED && status === INCIDENT_STATUS.IN_PROGRESS) ||
+        (incident.status === INCIDENT_STATUS.IN_PROGRESS && status === INCIDENT_STATUS.RESOLVED)
+
+      if (!technicianCanTransition) {
+        throw new ForbiddenError('Technicians can only start or resolve assigned work')
       }
     }
 
