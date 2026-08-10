@@ -1,12 +1,21 @@
 import { PAGE_ROUTES } from '../constants/routes.js'
 import { restoreSession, signOut } from '../auth/auth-session.js'
 import { subscribeToAuth } from '../auth/auth-store.js'
+import { getNavigationForRole } from '../auth/role-navigation.js'
 
 const guestActions = document.querySelector('#guest-actions')
+
 const userActions = document.querySelector('#user-actions')
+
 const userEmail = document.querySelector('#header-user-email')
+
 const userRole = document.querySelector('#header-user-role')
+
 const logoutButton = document.querySelector('#logout-button')
+
+const navigation = document.querySelector('#role-navigation')
+
+const navigationList = document.querySelector('#role-navigation-list')
 
 const formatRole = (role) => {
   if (!role) {
@@ -14,6 +23,35 @@ const formatRole = (role) => {
   }
 
   return role.charAt(0).toUpperCase() + role.slice(1)
+}
+
+const renderNavigation = (role) => {
+  const items = getNavigationForRole(role)
+
+  navigationList.replaceChildren()
+
+  for (const item of items) {
+    const listItem = document.createElement('li')
+    const link = document.createElement('a')
+
+    link.href = item.href
+    link.textContent = item.label
+
+    if (window.location.pathname === item.href) {
+      link.classList.add('active')
+      link.setAttribute('aria-current', 'page')
+    }
+
+    listItem.appendChild(link)
+    navigationList.appendChild(listItem)
+  }
+
+  navigation.hidden = items.length === 0
+}
+
+const clearNavigation = () => {
+  navigationList.replaceChildren()
+  navigation.hidden = true
 }
 
 const renderAuthState = ({ user, isAuthenticated }) => {
@@ -24,6 +62,8 @@ const renderAuthState = ({ user, isAuthenticated }) => {
     userEmail.textContent = user.email
     userRole.textContent = formatRole(user.role)
 
+    renderNavigation(user.role)
+
     return
   }
 
@@ -32,6 +72,8 @@ const renderAuthState = ({ user, isAuthenticated }) => {
 
   userEmail.textContent = ''
   userRole.textContent = ''
+
+  clearNavigation()
 }
 
 const handleLogout = async () => {

@@ -4,8 +4,9 @@ export const PAGE_ROUTES = Object.freeze({
   REGISTER: '/register',
   PRODUCTS: '/products',
   TECHNICIANS: '/technicians',
-  INCIDENTS: '/incidents',
-  CUSTOMERS: '/customers'
+  CUSTOMERS: '/customers',
+  REGISTER_PRODUCT: '/register-product',
+  INCIDENTS: '/incidents'
 })
 
 export const API_ROUTES = Object.freeze({
