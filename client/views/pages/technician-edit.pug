@@ -1,18 +1,59 @@
 extends ../layouts/default.pug
 
-include ../mixins/technician-form.pug
-
 block content
   .main-panel
     .form-panel
       h3 Edit Technician
 
-      form#technician-edit-form(data-technician-id=technician.techId)
-        +technicianForm(technician)
+      #technician-edit-error.alert.alert-danger(
+        role="alert"
+        hidden
+      )
+
+      form#technician-edit-form
+        .form-group
+          label(for="firstName") First Name
+          input#firstName(
+            type="text"
+            name="firstName"
+            required
+          )
+
+        .form-group
+          label(for="lastName") Last Name
+          input#lastName(
+            type="text"
+            name="lastName"
+            required
+          )
+
+        .form-group
+          label(for="email") Email
+          input#email(
+            type="email"
+            name="email"
+            required
+          )
+
+        .form-group
+          label(for="phone") Phone
+          input#phone(
+            type="tel"
+            name="phone"
+            required
+          )
 
         .button-group
-          button.btn.btn-primary(type="submit") Save Changes
-          a.btn(href="/technicians") Cancel
+          button.btn.btn-primary(
+            type="submit"
+          ) Save Changes
+
+          a.btn.btn-secondary(
+            href="/technicians"
+          ) Cancel
 
 block scripts
-  script(src="/js/technician-edit.js" type="module")
+  script(
+    src="/js/technician-edit.js"
+    type="module"
+  )

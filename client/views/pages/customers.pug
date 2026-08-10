@@ -6,6 +6,11 @@ block content
       h2 Customer Search
       a.btn.btn-home(href="/") Home
 
+    #customers-error.alert.alert-danger(
+      role="alert"
+      hidden
+    )
+
     // Search Form
     form#customer-search-form.search-panel.mb-4
       .form-group
@@ -15,17 +20,19 @@ block content
             placeholder="Enter last name"
             name="lastName"
             type="text"
-            )
-          button.btn.btn-primary.search-btn(type="submit") Search
+          )
+          button.btn.btn-primary.search-btn(
+            type="submit"
+          ) Search
 
     // Search Results
     .results-panel.mb-4
       h3 Results
 
-      p#customer-no-results No customers found.
+      p#customer-no-results(hidden) No customers found.
 
       .table-container
-        table#customer-results-table
+        table#customer-results-table(hidden)
           thead
             tr
               th Name
@@ -35,4 +42,7 @@ block content
           tbody#customer-results-body
 
 block scripts
-  script(src="/js/customers.js" type="module")
+  script(
+    src="/js/customers.js"
+    type="module"
+  )

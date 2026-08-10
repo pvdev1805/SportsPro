@@ -1,0 +1,36 @@
+extends ../layouts/default
+
+block content
+  .main-panel
+    .form-panel
+      h3 Sign In
+
+      form#login-form(novalidate)
+        .form-group
+          label(for='email') Email
+          input#email(
+            type='email'
+            name='email'
+            autocomplete='email'
+            required
+          )
+
+        .form-group
+          label(for='password') Password
+          input#password(
+            type='password'
+            name='password'
+            autocomplete='current-password'
+            required
+          )
+
+        #login-error(role='alert' aria-live='polite' hidden)
+
+        button#login-submit.btn.btn-primary(type='submit') Sign In
+
+      p.panel-message
+        | Don't have an account?
+        a(href='/register') Create one
+
+block scripts
+  script(type='module' src='/js/pages/login.js')

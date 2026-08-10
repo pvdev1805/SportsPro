@@ -1,12 +1,7 @@
-import technicianService from '../../services/technician.service.js'
-
 // GET /technicians
-export const renderTechnicianPage = async (req, res) => {
-  const technicians = await technicianService.getAllTechnicians()
-
+export const renderTechnicianPage = (req, res) => {
   return res.render('pages/technicians', {
-    title: 'Manage Technicians',
-    technicians
+    title: 'Manage Technicians'
   })
 }
 
@@ -18,13 +13,8 @@ export const renderTechnicianCreatePage = (req, res) => {
 }
 
 // GET /technicians/:techId/edit
-export const renderTechnicianEditPage = async (req, res) => {
-  const { techId } = req.validated.params
-
-  const technician = await technicianService.getTechnicianById(techId)
-
+export const renderTechnicianEditPage = (req, res) => {
   return res.render('pages/technician-edit', {
-    title: 'Edit Technician',
-    technician
+    title: 'Edit Technician'
   })
 }

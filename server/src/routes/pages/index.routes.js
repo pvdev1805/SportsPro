@@ -6,6 +6,8 @@ import registrationRoutes from './registration.routes.js'
 import technicianRoutes from './technician.routes.js'
 import incidentRoutes from './incident.routes.js'
 
+import authPageController from '../../controllers/pages/auth.controller.js'
+
 const router = Router()
 
 router.use('/', homeRoutes)
@@ -14,5 +16,8 @@ router.use('/customers', customerRoutes)
 router.use('/register-product', registrationRoutes)
 router.use('/technicians', technicianRoutes)
 router.use('/incidents', incidentRoutes)
+
+router.get('/login', authPageController.renderLoginPage)
+router.get('/register', authPageController.renderRegisterPage)
 
 export default router
