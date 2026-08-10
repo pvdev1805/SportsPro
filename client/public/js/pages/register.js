@@ -126,11 +126,21 @@ const validateRegisterForm = () => {
         min: 2,
         max: 2
       }),
+      validatePattern('countryCode', countryCode, {
+        label: 'Country code',
+        pattern: /^[A-Za-z]{2}$/,
+        message: 'Country code must contain letters only'
+      }),
 
       validateRequired('phone', phone, 'Phone'),
       validateLength('phone', phone, {
         label: 'Phone',
         max: 20
+      }),
+      validatePattern('phone', phone, {
+        label: 'Phone number',
+        pattern: /^[0-9+()\-\s]+$/,
+        message: 'Phone number contains invalid characters'
       })
     ])
   )

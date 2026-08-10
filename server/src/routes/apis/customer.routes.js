@@ -21,20 +21,15 @@ const router = Router()
  *     tags:
  *       - Customers
  *     summary: Retrieve all customers
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: A list of customers
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Customer'
+ *               $ref: '#/components/schemas/CustomerListResponse'
  */
 router.get('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(customerController.getAllCustomers))
 
@@ -45,6 +40,8 @@ router.get('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(customer
  *     tags:
  *       - Customers
  *     summary: Search customers by last name
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: lastName
@@ -55,6 +52,10 @@ router.get('/', authenticate, authorize(USER_ROLES.ADMIN), asyncHandler(customer
  *     responses:
  *       200:
  *         description: Matching customers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CustomerListResponse'
  */
 router.get(
   '/search',
@@ -71,6 +72,8 @@ router.get(
  *     tags:
  *       - Customers
  *     summary: Retrieve customer details by ID
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: customerId
@@ -81,6 +84,10 @@ router.get(
  *     responses:
  *       200:
  *         description: Customer details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CustomerResponse'
  *       404:
  *         description: Customer not found
  */
@@ -100,6 +107,8 @@ router.get(
  *     tags:
  *       - Customers
  *     summary: Partially update customer information
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: customerId
@@ -116,6 +125,10 @@ router.get(
  *     responses:
  *       200:
  *         description: Customer updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CustomerMutationResponse'
  *       404:
  *         description: Customer not found
  */

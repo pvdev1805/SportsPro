@@ -17,6 +17,8 @@ const router = Router()
  *     tags:
  *       - Registrations
  *     summary: Register a product for a customer
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -36,6 +38,10 @@ const router = Router()
  *     responses:
  *       201:
  *         description: Product registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/RegistrationResponse'
  *       404:
  *         description: Customer or product not found
  *       409:
@@ -56,6 +62,8 @@ router.post(
  *     tags:
  *       - Registrations
  *     summary: Retrieve registrations for a customer
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: customerId
@@ -66,6 +74,10 @@ router.post(
  *     responses:
  *       200:
  *         description: A list of registrations
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/RegistrationListResponse'
  *       404:
  *         description: Customer not found
  */
