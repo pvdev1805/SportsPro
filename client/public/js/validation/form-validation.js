@@ -82,10 +82,16 @@ export const validateDate = (field, value, label) => {
     return requiredError
   }
 
-  const date = new Date(`${value}T00:00:00`)
+  const normalizedValue = normalizeValue(value)
 
-  if (Number.isNaN(date.getTime())) {
-    return createValidationError(field, `${label} must be a valid date`)
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(normalizedValue)) {
+    return createValidationError(field, `${label} must use YYYY-MM-DD format`)
+  }
+
+  const date = new Date(`${normalizedValue}T00:00:00Z`)
+
+  if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== normalizedValue) {
+    return createValidationError(field, `${label} must be a valid calendar date`)
   }
 
   return null
