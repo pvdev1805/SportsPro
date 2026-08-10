@@ -4,71 +4,83 @@ block content
   .main-panel
     .header-section
       h2 Assign Incident
-      a(href="/") Home
+      a.btn.btn-home(href="/incidents") Back to Incidents
 
-    // Unassigned Incidents List
+    #incident-assign-error.alert.alert-danger(
+      role="alert"
+      aria-live="polite"
+      hidden
+    )
+
     .incidents-panel.mb-4
       h3 Select Incident
+
+      p#assign-empty-message(hidden) No assignable incidents found.
+
       .table-container
-        table
+        table#assign-incidents-table(hidden)
           thead
             tr
               th ID
               th Customer
               th Product
+              th Status
+              th Technician
               th Date Opened
               th Title
               th Action
-          tbody
-            // Sample incident data - students will replace with dynamic data
-            tr
-              td 1
-              td David Thompson
-              td LEAG10
-              td 2023-03-15
-              td Error importing data
-              td
-                button.btn.btn-primary(type="button") Select
-            tr
-              td 3
-              td Michael Chen
-              td TEAM10
-              td 2023-03-20
-              td Report generation failure
-              td
-                button.btn.btn-primary(type="button") Select
 
-    // Incident Assignment Form (Initially hidden - shown after selecting an incident)
-    .assignment-panel
+          tbody#assign-incidents-body
+
+    #assignment-panel.assignment-panel(hidden)
       h3 Assign to Technician
+
       .incident-details.mb-4
         .detail-row
           .detail-label Incident ID:
-          .detail-value 3
+          .detail-value#selected-incident-id
+
         .detail-row
           .detail-label Customer:
-          .detail-value Michael Chen
+          .detail-value#selected-customer
+
         .detail-row
           .detail-label Product:
-          .detail-value TEAM10 (Team Manager Version 1.0)
+          .detail-value#selected-product
+
         .detail-row
-          .detail-label Date Opened:
-          .detail-value 2023-03-20
+          .detail-label Current Status:
+          .detail-value#selected-status
+
+        .detail-row
+          .detail-label Current Technician:
+          .detail-value#selected-technician
+
         .detail-row
           .detail-label Title:
-          .detail-value Report generation failure
-        .detail-row.full-width
-          .detail-label Description:
-          .detail-value.description-box
-            | Unable to generate end-of-season statistics report. The application crashes when attempting to run reports.
-      .form-group
-        label(for="technician") Technician:
-        select#technician(name="technician")
-          option(value="") -- Select a Technician --
-          option(value="1") John Doe (john.doe@sportspro.com)
-          option(value="2") Jane Smith (jane.smith@sportspro.com)
-          option(value="3") Mike Johnson (mike.johnson@sportspro.com)
-          // Additional technicians to be added by students
-      .button-group
-        button.btn.btn-primary(type="submit") Assign Incident
-        button.btn.btn-secondary(type="button") Cancel
+          .detail-value#selected-title
+
+      form#incident-assignment-form
+        .form-group
+          label(for="techId") Technician
+
+          select#techId(
+            name="techId"
+            required
+          )
+            option(value="") -- Select a Technician --
+
+        .button-group
+          button#assign-submit.btn.btn-primary(
+            type="submit"
+          ) Assign Incident
+
+          button#assign-cancel.btn.btn-secondary(
+            type="button"
+          ) Cancel
+
+block scripts
+  script(
+    src="/js/incident-assign.js"
+    type="module"
+  )
