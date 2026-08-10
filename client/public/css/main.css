@@ -311,6 +311,25 @@ textarea {
   margin-bottom: 0;
 }
 
+.field-error {
+  margin-top: 0.35rem;
+  color: #b42318;
+  font-size: 0.85rem;
+}
+
+input[aria-invalid='true'],
+select[aria-invalid='true'],
+textarea[aria-invalid='true'] {
+  border-color: #dc3545;
+}
+
+input[aria-invalid='true']:focus,
+select[aria-invalid='true']:focus,
+textarea[aria-invalid='true']:focus {
+  outline: 2px solid rgba(220, 53, 69, 0.2);
+  outline-offset: 1px;
+}
+
 /* Buttons */
 .btn {
   display: inline-block;

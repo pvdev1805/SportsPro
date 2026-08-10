@@ -3,6 +3,16 @@ import { API_ROUTES } from './constants/routes.js'
 import { apiRequest } from './utils/api.js'
 import { setFlashNotification } from './utils/notification.js'
 
+import {
+  compactValidationErrors,
+  keepFirstErrorPerField,
+  validateLength,
+  validatePattern,
+  validateRequired
+} from './validation/form-validation.js'
+
+import { clearFieldErrors, focusFirstInvalidField, showFieldErrors } from './validation/form-errors.js'
+
 const loadingElement = document.querySelector('#incident-loading')
 const contentElement = document.querySelector('#incident-content')
 const errorElement = document.querySelector('#incident-update-error')
@@ -217,6 +227,35 @@ const buildUpdatePayload = (role) => {
   }
 }
 
+const validateIncidentUpdateForm = (role) => {
+  const errors = []
+
+  if (role !== 'technician') {
+    errors.push(
+      validateRequired('productCode', productSelect.value, 'Product'),
+      validateLength('productCode', productSelect.value, {
+        label: 'Product code',
+        max: 10
+      }),
+      validatePattern('productCode', productSelect.value, {
+        label: 'Product code',
+        pattern: /^[A-Za-z0-9]+$/,
+        message: 'Product code may only contain letters and numbers'
+      }),
+
+      validateRequired('title', titleInput.value, 'Incident title'),
+      validateLength('title', titleInput.value, {
+        label: 'Incident title',
+        max: 50
+      })
+    )
+  }
+
+  errors.push(validateRequired('description', descriptionInput.value, 'Incident description'))
+
+  return keepFirstErrorPerField(compactValidationErrors(errors))
+}
+
 const handleContentUpdate = async (event) => {
   event.preventDefault()
 
@@ -227,6 +266,18 @@ const handleContentUpdate = async (event) => {
   const role = authState.user.role
 
   if (role === 'customer' && incident.status !== 'open') {
+    return
+  }
+
+  clearFieldErrors(updateForm)
+
+  const validationErrors = validateIncidentUpdateForm(role)
+
+  if (validationErrors.length > 0) {
+    showFieldErrors(updateForm, validationErrors)
+
+    focusFirstInvalidField(updateForm, validationErrors)
+
     return
   }
 
@@ -256,6 +307,28 @@ const handleContentUpdate = async (event) => {
     saveButton.disabled = false
     saveButton.textContent = 'Save Changes'
   }
+}
+
+const handleFieldChange = (event) => {
+  const field = event.target
+
+  if (!(
+    field instanceof HTMLInputElement ||
+    field instanceof HTMLSelectElement ||
+    field instanceof HTMLTextAreaElement
+  )) {
+    return
+  }
+
+  const fieldError = updateForm.querySelector(`#${field.name}-error`)
+
+  if (fieldError) {
+    fieldError.textContent = ''
+    fieldError.hidden = true
+  }
+
+  field.removeAttribute('aria-invalid')
+  field.removeAttribute('aria-describedby')
 }
 
 const handleStatusUpdate = async () => {
@@ -346,6 +419,9 @@ const init = async () => {
     contentElement.hidden = false
 
     updateForm.addEventListener('submit', handleContentUpdate)
+
+    updateForm.addEventListener('input', handleFieldChange)
+    updateForm.addEventListener('change', handleFieldChange)
 
     statusButton.addEventListener('click', handleStatusUpdate)
   } catch (error) {
