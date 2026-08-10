@@ -4,33 +4,30 @@ block content
   .main-panel
     h2 SportsPro Technical Support
 
-    // Admin Section
-    .menu-section
-      h3 Administrators
-      ul.menu-list
-        li
-          a(href="/products") Manage Products
-        li
-          a(href="/technicians") Manage Technicians
-        li
-          a(href="/customers") Manage Customers
-        li
-          a(href="/incidents/create") Create Incident
-        li
-          a(href="/incidents/assign") Assign Incident
-        li
-          a(href="/incidents") Display Incidents
+    #home-error.alert.alert-danger(
+      role="alert"
+      aria-live="polite"
+      hidden
+    )
 
-    // Technicians Section
-    .menu-section
-      h3 Technicians
-      ul.menu-list
-        li
-          a(href="/incidents/update") Update Incident
+    #guest-home.hidden
+      h3 Welcome
+      p Please sign in or create an account to access SportsPro Technical Support.
 
-    // Customers Section
-    .menu-section
-      h3 Customers
-      ul.menu-list
-        li
-          a(href="/register-product") Register Product
+      .button-group
+        a.btn.btn-primary(href="/login") Sign In
+        a.btn.btn-secondary(href="/register") Create Account
+
+    #authenticated-home.hidden
+      p#home-welcome-message
+
+      .menu-section
+        h3#home-role-title
+
+        ul#home-menu-list.menu-list
+
+block scripts
+  script(
+    src="/js/pages/home.js"
+    type="module"
+  )
