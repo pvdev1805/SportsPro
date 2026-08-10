@@ -72,7 +72,7 @@ const createActionCell = (incident, role) => {
 
     editLink.classList.add('btn', 'btn-primary')
 
-    editLink.href = `/incidents/update?incidentId=${incident.incidentId}`
+    editLink.href = `/incidents/${incident.incidentId}/edit`
 
     editLink.textContent = role === 'customer' ? 'View/Edit' : 'View/Update'
 

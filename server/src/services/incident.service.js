@@ -299,6 +299,10 @@ const updateIncident = async ({ incidentId, actorUserId, actorRole, productCode,
       }
     }
 
+    if (actorRole === USER_ROLES.TECHNICIAN && (productCode !== undefined || title !== undefined)) {
+      throw new ForbiddenError('Technicians can only update the incident description')
+    }
+
     if (actorRole !== USER_ROLES.ADMIN && actorRole !== USER_ROLES.TECHNICIAN && actorRole !== USER_ROLES.CUSTOMER) {
       throw new ForbiddenError('You do not have permission to update incidents')
     }
@@ -376,6 +380,10 @@ const updateIncidentStatus = async ({ incidentId, actorUserId, actorRole, status
 
     if (!incident) {
       throw new NotFoundError(`Incident with ID "${parsedIncidentId}" not found`)
+    }
+
+    if (incident.status === INCIDENT_STATUS.CLOSED) {
+      throw new ForbiddenError('Closed incidents cannot be modified')
     }
 
     if (actorRole === USER_ROLES.CUSTOMER) {
