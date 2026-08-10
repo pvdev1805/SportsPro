@@ -1,36 +1,84 @@
+import { requireRole } from './auth/auth-guard.js'
 import { API_ROUTES, PAGE_ROUTES } from './constants/routes.js'
 import { apiRequest } from './utils/api.js'
 import { setFlashNotification, showError } from './utils/notification.js'
 
-const customerEditForm = document.querySelector('#customer-edit-form')
+const form = document.querySelector('#customer-edit-form')
 
-const handleEditCustomer = async (event) => {
+const errorElement = document.querySelector('#customer-edit-error')
+
+const firstNameInput = document.querySelector('#firstName')
+
+const lastNameInput = document.querySelector('#lastName')
+
+const emailInput = document.querySelector('#email')
+
+const addressInput = document.querySelector('#address')
+
+const cityInput = document.querySelector('#city')
+
+const stateInput = document.querySelector('#state')
+
+const postalCodeInput = document.querySelector('#postalCode')
+
+const countryCodeInput = document.querySelector('#countryCode')
+
+const phoneInput = document.querySelector('#phone')
+
+const getCustomerId = () => {
+  const parts = window.location.pathname.split('/').filter(Boolean)
+
+  return parts[1]
+}
+
+const populateForm = (customer) => {
+  firstNameInput.value = customer.firstName ?? ''
+
+  lastNameInput.value = customer.lastName ?? ''
+
+  emailInput.value = customer.user?.email ?? ''
+
+  addressInput.value = customer.address ?? ''
+
+  cityInput.value = customer.city ?? ''
+
+  stateInput.value = customer.state ?? ''
+
+  postalCodeInput.value = customer.postalCode ?? ''
+
+  countryCodeInput.value = customer.countryCode ?? ''
+
+  phoneInput.value = customer.phone ?? ''
+}
+
+const loadCustomer = async (customerId) => {
+  const result = await apiRequest(`${API_ROUTES.CUSTOMERS}/${customerId}`, {}, 'Failed to load customer')
+
+  populateForm(result.data)
+}
+
+const handleSubmit = async (event) => {
   event.preventDefault()
 
-  const formData = new FormData(customerEditForm)
-  const customerId = customerEditForm.dataset.customerId
+  const customerId = getCustomerId()
 
   const customerData = {
-    firstName: formData.get('firstName').trim(),
-    lastName: formData.get('lastName').trim(),
-    address: formData.get('address').trim(),
-    city: formData.get('city').trim(),
-    state: formData.get('state').trim(),
-    postalCode: formData.get('postalCode').trim(),
-    countryCode: formData.get('countryCode'),
-    phone: formData.get('phone').trim(),
-    email: formData.get('email').trim(),
-    password: formData.get('password')
+    firstName: firstNameInput.value.trim(),
+    lastName: lastNameInput.value.trim(),
+    address: addressInput.value.trim(),
+    city: cityInput.value.trim(),
+    state: stateInput.value.trim(),
+    postalCode: postalCodeInput.value.trim(),
+    countryCode: countryCodeInput.value.trim().toUpperCase(),
+    phone: phoneInput.value.trim(),
+    email: emailInput.value.trim()
   }
 
   try {
     await apiRequest(
       `${API_ROUTES.CUSTOMERS}/${customerId}`,
       {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        method: 'PATCH',
         body: JSON.stringify(customerData)
       },
       'Failed to update customer'
@@ -44,10 +92,31 @@ const handleEditCustomer = async (event) => {
     window.location.href = PAGE_ROUTES.CUSTOMERS
   } catch (error) {
     console.error('Error updating customer:', error)
+
     showError(error.message)
   }
 }
 
-if (customerEditForm) {
-  customerEditForm.addEventListener('submit', handleEditCustomer)
+const init = async () => {
+  try {
+    const authState = await requireRole('admin')
+
+    if (!authState) {
+      return
+    }
+
+    const customerId = getCustomerId()
+
+    await loadCustomer(customerId)
+
+    form.addEventListener('submit', handleSubmit)
+  } catch (error) {
+    console.error('Unable to load customer:', error)
+
+    errorElement.textContent = error.message || 'Unable to load customer.'
+
+    errorElement.hidden = false
+  }
 }
+
+init()

@@ -1,18 +1,103 @@
 extends ../layouts/default.pug
 
-include ../mixins/customer-form.pug
-
 block content
   .main-panel
     .form-panel
       h3 View/Update Customer
 
-      form#customer-edit-form(data-customer-id=customer.customerId)
-        +customerForm(customer, countries)
+      #customer-edit-error.alert.alert-danger(
+        role="alert"
+        hidden
+      )
+
+      form#customer-edit-form
+        .form-row
+          .form-group
+            label(for="firstName") First Name
+            input#firstName(
+              type="text"
+              name="firstName"
+              required
+            )
+
+          .form-group
+            label(for="lastName") Last Name
+            input#lastName(
+              type="text"
+              name="lastName"
+              required
+            )
+
+        .form-group
+          label(for="email") Email
+          input#email(
+            type="email"
+            name="email"
+            required
+          )
+
+        .form-group
+          label(for="address") Address
+          input#address(
+            type="text"
+            name="address"
+            required
+          )
+
+        .form-row
+          .form-group
+            label(for="city") City
+            input#city(
+              type="text"
+              name="city"
+              required
+            )
+
+          .form-group
+            label(for="state") State
+            input#state(
+              type="text"
+              name="state"
+              required
+            )
+
+        .form-row
+          .form-group
+            label(for="postalCode") Postal Code
+            input#postalCode(
+              type="text"
+              name="postalCode"
+              required
+            )
+
+          .form-group
+            label(for="countryCode") Country Code
+            input#countryCode(
+              type="text"
+              name="countryCode"
+              maxlength="2"
+              required
+            )
+
+        .form-group
+          label(for="phone") Phone
+          input#phone(
+            type="tel"
+            name="phone"
+            required
+          )
 
         .button-group
-          button.btn.btn-primary(type="submit") Save Changes
-          a.btn.btn-secondary(href="/customers") Cancel
+          button.btn.btn-primary(
+            type="submit"
+          ) Save Changes
+
+          a.btn.btn-secondary(
+            href="/customers"
+          ) Cancel
 
 block scripts
-  script(src="/js/customer-edit.js" type="module")
+  script(
+    src="/js/customer-edit.js"
+    type="module"
+  )
