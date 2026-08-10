@@ -1,3 +1,4 @@
+import { requireRole } from './auth/auth-guard.js'
 import { API_ROUTES, PAGE_ROUTES } from './constants/routes.js'
 import { apiRequest } from './utils/api.js'
 import { setFlashNotification, showError } from './utils/notification.js'
@@ -21,9 +22,6 @@ const handleCreateProduct = async (event) => {
       API_ROUTES.PRODUCTS,
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(productData)
       },
       'Failed to create product'
@@ -34,10 +32,25 @@ const handleCreateProduct = async (event) => {
     window.location.href = PAGE_ROUTES.PRODUCTS
   } catch (error) {
     console.error('Error creating product:', error)
+
     showError(error.message)
   }
 }
 
-if (productCreateForm) {
-  productCreateForm.addEventListener('submit', handleCreateProduct)
+const init = async () => {
+  try {
+    const authState = await requireRole('admin')
+
+    if (!authState) {
+      return
+    }
+
+    productCreateForm.addEventListener('submit', handleCreateProduct)
+  } catch (error) {
+    console.error('Unable to initialize product form:', error)
+
+    showError(error.message || 'Unable to initialize product form.')
+  }
 }
+
+init()

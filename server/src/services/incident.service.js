@@ -2,7 +2,7 @@ import sequelize from '../config/database.js'
 
 import { INCIDENT_STATUS, INCIDENT_STATUS_VALUES } from '../constants/incident-status.js'
 import { USER_ROLES } from '../constants/user-roles.js'
-import { Customer, Incident, Product, Registration, Technician } from '../models/index.js'
+import { Customer, Incident, Product, Registration, Technician, User } from '../models/index.js'
 import { BadRequestError, ForbiddenError, NotFoundError } from '../utils/app-error.js'
 
 const incidentIncludes = [
@@ -208,6 +208,11 @@ const assignTechnician = async (incidentId, techId) => {
     }
 
     const technician = await Technician.findByPk(parsedTechId, {
+      include: {
+        model: User,
+        as: 'user',
+        attributes: ['userId', 'isActive']
+      },
       transaction
     })
 
@@ -215,14 +220,20 @@ const assignTechnician = async (incidentId, techId) => {
       throw new NotFoundError(`Technician with ID "${parsedTechId}" not found`)
     }
 
+    if (!technician.user?.isActive) {
+      throw new BadRequestError('Inactive technicians cannot be assigned to incidents')
+    }
+
     if (incident.status === INCIDENT_STATUS.RESOLVED || incident.status === INCIDENT_STATUS.CLOSED) {
       throw new BadRequestError('Resolved or closed incidents cannot be assigned')
     }
 
+    const nextStatus = incident.status === INCIDENT_STATUS.OPEN ? INCIDENT_STATUS.ASSIGNED : incident.status
+
     await incident.update(
       {
         techId: technician.techId,
-        status: INCIDENT_STATUS.ASSIGNED
+        status: nextStatus
       },
       {
         transaction
@@ -250,6 +261,10 @@ const updateIncident = async ({ incidentId, actorUserId, actorRole, productCode,
 
     if (!incident) {
       throw new NotFoundError(`Incident with ID "${parsedIncidentId}" not found`)
+    }
+
+    if (incident.status === INCIDENT_STATUS.CLOSED) {
+      throw new ForbiddenError('Closed incidents cannot be modified')
     }
 
     if (actorRole === USER_ROLES.CUSTOMER) {
@@ -288,6 +303,10 @@ const updateIncident = async ({ incidentId, actorUserId, actorRole, productCode,
       if (incident.techId !== technician.techId) {
         throw new ForbiddenError('You do not have permission to update this incident')
       }
+    }
+
+    if (actorRole === USER_ROLES.TECHNICIAN && (productCode !== undefined || title !== undefined)) {
+      throw new ForbiddenError('Technicians can only update the incident description')
     }
 
     if (actorRole !== USER_ROLES.ADMIN && actorRole !== USER_ROLES.TECHNICIAN && actorRole !== USER_ROLES.CUSTOMER) {
@@ -369,6 +388,10 @@ const updateIncidentStatus = async ({ incidentId, actorUserId, actorRole, status
       throw new NotFoundError(`Incident with ID "${parsedIncidentId}" not found`)
     }
 
+    if (incident.status === INCIDENT_STATUS.CLOSED) {
+      throw new ForbiddenError('Closed incidents cannot be modified')
+    }
+
     if (actorRole === USER_ROLES.CUSTOMER) {
       throw new ForbiddenError('Customers cannot update incident status')
     }
@@ -387,6 +410,14 @@ const updateIncidentStatus = async ({ incidentId, actorUserId, actorRole, status
 
       if (incident.techId !== technician.techId) {
         throw new ForbiddenError('You do not have permission to update this incident')
+      }
+
+      const technicianCanTransition =
+        (incident.status === INCIDENT_STATUS.ASSIGNED && status === INCIDENT_STATUS.IN_PROGRESS) ||
+        (incident.status === INCIDENT_STATUS.IN_PROGRESS && status === INCIDENT_STATUS.RESOLVED)
+
+      if (!technicianCanTransition) {
+        throw new ForbiddenError('Technicians can only start or resolve assigned work')
       }
     }
 
