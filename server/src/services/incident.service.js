@@ -2,7 +2,7 @@ import sequelize from '../config/database.js'
 
 import { INCIDENT_STATUS, INCIDENT_STATUS_VALUES } from '../constants/incident-status.js'
 import { USER_ROLES } from '../constants/user-roles.js'
-import { Customer, Incident, Product, Registration, Technician } from '../models/index.js'
+import { Customer, Incident, Product, Registration, Technician, User } from '../models/index.js'
 import { BadRequestError, ForbiddenError, NotFoundError } from '../utils/app-error.js'
 
 const incidentIncludes = [
@@ -208,6 +208,11 @@ const assignTechnician = async (incidentId, techId) => {
     }
 
     const technician = await Technician.findByPk(parsedTechId, {
+      include: {
+        model: User,
+        as: 'user',
+        attributes: ['userId', 'isActive']
+      },
       transaction
     })
 
@@ -215,8 +220,12 @@ const assignTechnician = async (incidentId, techId) => {
       throw new NotFoundError(`Technician with ID "${parsedTechId}" not found`)
     }
 
-    if (incident.status === INCIDENT_STATUS.RESOLVED || incident.status === INCIDENT_STATUS.CLOSED) {
-      throw new BadRequestError('Resolved or closed incidents cannot be assigned')
+    if (!technician.user?.isActive) {
+      throw new BadRequestError('Inactive technicians cannot be assigned to incidents')
+    }
+
+    if (incident.status !== INCIDENT_STATUS.OPEN && incident.status !== INCIDENT_STATUS.ASSIGNED) {
+      throw new BadRequestError('Only open or assigned incidents can be assigned or reassigned')
     }
 
     await incident.update(

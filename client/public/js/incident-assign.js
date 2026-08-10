@@ -64,7 +64,7 @@ const getTechnicianName = (incident) => {
 }
 
 const getAssignableIncidents = (allIncidents) => {
-  return allIncidents.filter((incident) => incident.status !== 'resolved' && incident.status !== 'closed')
+  return allIncidents.filter((incident) => incident.status === 'open' || incident.status === 'assigned')
 }
 
 const populateSelectedIncident = (incident) => {
