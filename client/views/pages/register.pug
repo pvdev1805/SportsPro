@@ -103,11 +103,11 @@ block content
           hidden
         )
 
-        button#register-submit(type='submit') Create Account
+        button#register-submit.btn.btn-primary(type='submit') Create Account
 
       p
         | Already have an account?
-        a(href='/login') Sign In
+        a.btn.btn-secondary(href='/login') Sign In
 
 block scripts
   script(type='module' src='/js/pages/register.js')

@@ -26,7 +26,11 @@ block content
 
         #login-error(role='alert' aria-live='polite' hidden)
 
-        button#login-submit(type='submit') Sign In
+        button#login-submit.btn.btn-primary(type='submit') Sign In
+
+      p.panel-message
+        | Don't have an account?
+        a(href='/register') Create one
 
 block scripts
   script(type='module' src='/js/pages/login.js')

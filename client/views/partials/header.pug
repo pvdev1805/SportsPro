@@ -1,4 +1,20 @@
 header.header
   .container
-    h1 SportsPro Technical Support
-    p Sports management software for the sports enthusiast
+    .header-content
+      .header-brand
+        a.header-title(href='/') SportsPro Technical Support
+        p Sports management software for the sports enthusiast
+
+      .header-auth
+        #guest-actions.header-auth-actions(hidden)
+          a.btn.btn-header(href='/login') Sign In
+          a.btn.btn-header-outline(href='/register') Create Account
+
+        #user-actions.header-user(hidden)
+          .header-user-info
+            span#header-user-email.header-user-email
+            span#header-user-role.header-user-role
+
+          button#logout-button.btn.btn-header-outline(
+            type='button'
+          ) Sign Out
