@@ -3,6 +3,10 @@ import { API_ROUTES } from './constants/routes.js'
 import { apiRequest } from './utils/api.js'
 import { showError } from './utils/notification.js'
 
+import { compactValidationErrors, keepFirstErrorPerField, validateRequired } from './validation/form-validation.js'
+
+import { clearFieldErrors, focusFirstInvalidField, showFieldErrors } from './validation/form-errors.js'
+
 const registrationForm = document.querySelector('#product-registration-form')
 
 const registrationPanel = document.querySelector('.registration-panel')
@@ -67,17 +71,30 @@ const loadProducts = async () => {
   renderProducts(result.data ?? [])
 }
 
+const validateRegistrationForm = () => {
+  return keepFirstErrorPerField(
+    compactValidationErrors([validateRequired('productCode', productSelect.value, 'Product')])
+  )
+}
+
 const handleProductRegistration = async (event) => {
   event.preventDefault()
+
+  clearFieldErrors(registrationForm)
+
+  const validationErrors = validateRegistrationForm()
+
+  if (validationErrors.length > 0) {
+    showFieldErrors(registrationForm, validationErrors)
+
+    focusFirstInvalidField(registrationForm, validationErrors)
+
+    return
+  }
 
   clearPageError()
 
   const productCode = productSelect.value
-
-  if (!productCode) {
-    showError('Please select a product')
-    return
-  }
 
   try {
     const result = await apiRequest(
@@ -105,6 +122,19 @@ const handleProductRegistration = async (event) => {
   }
 }
 
+const handleProductChange = () => {
+  const fieldError = registrationForm.querySelector('#productCode-error')
+
+  if (fieldError) {
+    fieldError.textContent = ''
+    fieldError.hidden = true
+  }
+
+  productSelect.removeAttribute('aria-invalid')
+
+  productSelect.removeAttribute('aria-describedby')
+}
+
 const handleRegisterAnother = () => {
   productSelect.value = ''
 
@@ -125,6 +155,8 @@ const init = async () => {
     await Promise.all([loadCustomerProfile(), loadProducts()])
 
     registrationForm.addEventListener('submit', handleProductRegistration)
+
+    productSelect.addEventListener('change', handleProductChange)
 
     registerAnotherButton.addEventListener('click', handleRegisterAnother)
   } catch (error) {
