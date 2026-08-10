@@ -40,6 +40,10 @@ export const validateEmail = (field, value, label = 'Email') => {
 export const validateLength = (field, value, { label, min, max }) => {
   const normalizedValue = normalizeValue(value)
 
+  if (normalizedValue === '' || normalizedValue === null || normalizedValue === undefined) {
+    return null
+  }
+
   if (min !== undefined && normalizedValue.length < min) {
     return createValidationError(field, `${label} must be at least ${min} characters`)
   }
@@ -89,4 +93,31 @@ export const validateDate = (field, value, label) => {
 
 export const compactValidationErrors = (errors) => {
   return errors.filter(Boolean)
+}
+
+export const validatePattern = (field, value, { label, pattern, message }) => {
+  const normalizedValue = normalizeValue(value)
+
+  if (normalizedValue === '' || normalizedValue === null || normalizedValue === undefined) {
+    return null
+  }
+
+  if (!pattern.test(normalizedValue)) {
+    return createValidationError(field, message || `${label} is invalid`)
+  }
+
+  return null
+}
+
+export const keepFirstErrorPerField = (errors) => {
+  const seenFields = new Set()
+
+  return errors.filter((error) => {
+    if (seenFields.has(error.field)) {
+      return false
+    }
+
+    seenFields.add(error.field)
+    return true
+  })
 }
