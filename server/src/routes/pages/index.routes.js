@@ -18,5 +18,6 @@ router.use('/technicians', technicianRoutes)
 router.use('/incidents', incidentRoutes)
 
 router.get('/login', authPageController.renderLoginPage)
+router.get('/register', authPageController.renderRegisterPage)
 
 export default router

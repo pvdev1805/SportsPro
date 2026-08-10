@@ -5,8 +5,16 @@ const renderLoginPage = (req, res) => {
   })
 }
 
+// GET /register
+const renderRegisterPage = (req, res) => {
+  return res.render('pages/register', {
+    title: 'Create Account'
+  })
+}
+
 const authController = {
-  renderLoginPage
+  renderLoginPage,
+  renderRegisterPage
 }
 
 export default authController
