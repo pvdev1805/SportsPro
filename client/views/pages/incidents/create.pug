@@ -13,7 +13,7 @@ block content
     )
 
     .form-panel
-      form#incident-create-form
+      form#incident-create-form(novalidate)
         #customer-field.form-group(hidden)
           label(for="customerId") Customer
           select#customerId(name="customerId")

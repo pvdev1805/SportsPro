@@ -33,8 +33,18 @@ const registerBodySchema = z
     city: requiredText('City', 50),
     state: requiredText('State', 50),
     postalCode: requiredText('Postal code', 20),
-    countryCode: z.string().trim().toUpperCase().length(2, 'Country code must contain exactly 2 characters'),
-    phone: requiredText('Phone', 20)
+    countryCode: z
+      .string()
+      .trim()
+      .toUpperCase()
+      .length(2, 'Country code must contain exactly 2 characters')
+      .regex(/^[A-Z]{2}$/, 'Country code must contain only uppercase letters'),
+    phone: z
+      .string()
+      .trim()
+      .min(1, 'Phone number is required')
+      .max(20, 'Phone number must not exceed 20 characters')
+      .regex(/^[0-9+()\-\s]+$/, 'Phone number contains invalid characters')
   })
   .strict()
 
