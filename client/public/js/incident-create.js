@@ -59,16 +59,71 @@ const renderProducts = (products) => {
   }
 }
 
-const loadAdminData = async () => {
-  const [customersResult, productsResult] = await Promise.all([
-    apiRequest(API_ROUTES.CUSTOMERS, {}, 'Failed to load customers'),
-    apiRequest(API_ROUTES.PRODUCTS, {}, 'Failed to load products')
-  ])
+const loadAdminCustomers = async () => {
+  const customersResult = await apiRequest(API_ROUTES.CUSTOMERS, {}, 'Failed to load customers')
 
   renderCustomers(customersResult.data ?? [])
-  renderProducts(productsResult.data ?? [])
+
+  productSelect.replaceChildren()
+
+  const placeholder = document.createElement('option')
+
+  placeholder.value = ''
+  placeholder.textContent = '-- Select a Customer First --'
+
+  productSelect.appendChild(placeholder)
+  productSelect.disabled = true
 
   customerField.hidden = false
+}
+
+const loadRegisteredProductsForCustomer = async (customerId) => {
+  productSelect.disabled = true
+  productSelect.replaceChildren()
+
+  const loadingOption = document.createElement('option')
+
+  loadingOption.value = ''
+  loadingOption.textContent = 'Loading registered products...'
+
+  productSelect.appendChild(loadingOption)
+
+  const registrationsResult = await apiRequest(
+    `${API_ROUTES.REGISTRATIONS}/${customerId}`,
+    {},
+    'Failed to load registered products'
+  )
+
+  const products = (registrationsResult.data ?? []).map((registration) => registration.product).filter(Boolean)
+
+  renderProducts(products)
+  productSelect.disabled = false
+}
+
+const handleCustomerChange = async () => {
+  const customerId = Number(customerSelect.value)
+
+  if (!Number.isInteger(customerId) || customerId <= 0) {
+    productSelect.replaceChildren()
+
+    const placeholder = document.createElement('option')
+
+    placeholder.value = ''
+    placeholder.textContent = '-- Select a Customer First --'
+
+    productSelect.appendChild(placeholder)
+    productSelect.disabled = true
+
+    return
+  }
+
+  try {
+    await loadRegisteredProductsForCustomer(customerId)
+  } catch (error) {
+    console.error('Error loading registered products:', error)
+
+    showError(error.message)
+  }
 }
 
 const loadCustomerProducts = async () => {
@@ -165,7 +220,9 @@ const init = async () => {
     const role = authState.user.role
 
     if (role === 'admin') {
-      await loadAdminData()
+      await loadAdminCustomers()
+
+      customerSelect.addEventListener('change', handleCustomerChange)
     } else {
       await loadCustomerProducts()
     }

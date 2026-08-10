@@ -304,10 +304,12 @@ const loadIncident = async (incidentId) => {
   incident = result.data
 }
 
-const loadProducts = async () => {
-  const result = await apiRequest(API_ROUTES.PRODUCTS, {}, 'Failed to load products')
+const loadRegisteredProducts = async (customerId) => {
+  const result = await apiRequest(`${API_ROUTES.REGISTRATIONS}/${customerId}`, {}, 'Failed to load registered products')
 
-  populateProducts(result.data ?? [])
+  const products = (result.data ?? []).map((registration) => registration.product).filter(Boolean)
+
+  populateProducts(products)
 }
 
 const init = async () => {
@@ -324,18 +326,27 @@ const init = async () => {
       throw new Error('Invalid incident ID')
     }
 
-    await Promise.all([loadIncident(incidentId), loadProducts()])
+    await loadIncident(incidentId)
+
+    const role = authState.user.role
+
+    if (role === 'technician') {
+      populateProducts(incident.product ? [incident.product] : [])
+    } else {
+      await loadRegisteredProducts(incident.customerId)
+    }
 
     pageTitle.textContent = `Incident #${incident.incidentId}`
 
     populateIncident()
-    configureContentPermissions(authState.user.role)
-    configureStatusAction(authState.user.role)
+    configureContentPermissions(role)
+    configureStatusAction(role)
 
     loadingElement.hidden = true
     contentElement.hidden = false
 
     updateForm.addEventListener('submit', handleContentUpdate)
+
     statusButton.addEventListener('click', handleStatusUpdate)
   } catch (error) {
     console.error('Unable to initialize incident page:', error)
