@@ -3,6 +3,15 @@ import { API_ROUTES } from './constants/routes.js'
 import { apiRequest } from './utils/api.js'
 import { setFlashNotification, showError } from './utils/notification.js'
 
+import {
+  compactValidationErrors,
+  keepFirstErrorPerField,
+  validatePositiveInteger,
+  validateRequired
+} from './validation/form-validation.js'
+
+import { clearFieldErrors, focusFirstInvalidField, showFieldErrors } from './validation/form-errors.js'
+
 const errorElement = document.querySelector('#incident-assign-error')
 
 const table = document.querySelector('#assign-incidents-table')
@@ -193,6 +202,15 @@ const loadAssignmentData = async () => {
   renderTechnicians(techniciansResult.data ?? [])
 }
 
+const validateAssignmentForm = () => {
+  return keepFirstErrorPerField(
+    compactValidationErrors([
+      validateRequired('techId', technicianSelect.value, 'Technician'),
+      validatePositiveInteger('techId', technicianSelect.value, 'Technician ID')
+    ])
+  )
+}
+
 const setSubmitting = (isSubmitting) => {
   submitButton.disabled = isSubmitting
   submitButton.textContent = isSubmitting ? 'Assigning...' : 'Assign Incident'
@@ -206,12 +224,19 @@ const handleSubmit = async (event) => {
     return
   }
 
-  const techId = Number(technicianSelect.value)
+  clearFieldErrors(assignmentForm)
 
-  if (!Number.isInteger(techId) || techId <= 0) {
-    showError('Please select a technician')
+  const validationErrors = validateAssignmentForm()
+
+  if (validationErrors.length > 0) {
+    showFieldErrors(assignmentForm, validationErrors)
+
+    focusFirstInvalidField(assignmentForm, validationErrors)
+
     return
   }
+
+  const techId = Number(technicianSelect.value)
 
   setSubmitting(true)
 
@@ -239,6 +264,19 @@ const handleSubmit = async (event) => {
   }
 }
 
+const handleTechnicianChange = () => {
+  const fieldError = assignmentForm.querySelector('#techId-error')
+
+  if (fieldError) {
+    fieldError.textContent = ''
+    fieldError.hidden = true
+  }
+
+  technicianSelect.removeAttribute('aria-invalid')
+
+  technicianSelect.removeAttribute('aria-describedby')
+}
+
 const handleCancel = () => {
   selectedIncident = null
   technicianSelect.value = ''
@@ -258,6 +296,8 @@ const init = async () => {
     assignmentForm.addEventListener('submit', handleSubmit)
 
     cancelButton.addEventListener('click', handleCancel)
+
+    technicianSelect.addEventListener('change', handleTechnicianChange)
   } catch (error) {
     console.error('Unable to initialize incident assignment:', error)
 

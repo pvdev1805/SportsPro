@@ -65,6 +65,22 @@ export const validatePositiveNumber = (field, value, label) => {
   return null
 }
 
+export const validatePositiveInteger = (field, value, label) => {
+  const normalizedValue = normalizeValue(value)
+
+  if (normalizedValue === '' || normalizedValue === null || normalizedValue === undefined) {
+    return null
+  }
+
+  const numberValue = Number(normalizedValue)
+
+  if (!Number.isInteger(numberValue) || numberValue <= 0) {
+    return createValidationError(field, `${label} must be a positive integer`)
+  }
+
+  return null
+}
+
 export const validateOneDecimalPlace = (field, value, label) => {
   const numberValue = Number(value)
 

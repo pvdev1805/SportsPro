@@ -3,6 +3,17 @@ import { API_ROUTES, PAGE_ROUTES } from './constants/routes.js'
 import { apiRequest } from './utils/api.js'
 import { setFlashNotification, showError } from './utils/notification.js'
 
+import {
+  compactValidationErrors,
+  keepFirstErrorPerField,
+  validateLength,
+  validatePattern,
+  validatePositiveInteger,
+  validateRequired
+} from './validation/form-validation.js'
+
+import { clearFieldErrors, focusFirstInvalidField, showFieldErrors } from './validation/form-errors.js'
+
 const form = document.querySelector('#incident-create-form')
 
 const errorElement = document.querySelector('#incident-create-error')
@@ -100,6 +111,62 @@ const loadRegisteredProductsForCustomer = async (customerId) => {
   productSelect.disabled = false
 }
 
+const validateIncidentCreateForm = (role) => {
+  const errors = []
+
+  if (role === 'admin') {
+    errors.push(
+      validateRequired('customerId', customerSelect.value, 'Customer'),
+      validatePositiveInteger('customerId', customerSelect.value, 'Customer ID')
+    )
+  }
+
+  errors.push(
+    validateRequired('productCode', productSelect.value, 'Product'),
+    validateLength('productCode', productSelect.value, {
+      label: 'Product code',
+      max: 10
+    }),
+    validatePattern('productCode', productSelect.value, {
+      label: 'Product code',
+      pattern: /^[A-Za-z0-9]+$/,
+      message: 'Product code may only contain letters and numbers'
+    }),
+
+    validateRequired('title', titleInput.value, 'Incident title'),
+    validateLength('title', titleInput.value, {
+      label: 'Incident title',
+      max: 50
+    }),
+
+    validateRequired('description', descriptionInput.value, 'Incident description')
+  )
+
+  return keepFirstErrorPerField(compactValidationErrors(errors))
+}
+
+const handleFieldChange = (event) => {
+  const field = event.target
+
+  if (!(
+    field instanceof HTMLInputElement ||
+    field instanceof HTMLSelectElement ||
+    field instanceof HTMLTextAreaElement
+  )) {
+    return
+  }
+
+  const fieldError = form.querySelector(`#${field.name}-error`)
+
+  if (fieldError) {
+    fieldError.textContent = ''
+    fieldError.hidden = true
+  }
+
+  field.removeAttribute('aria-invalid')
+  field.removeAttribute('aria-describedby')
+}
+
 const handleCustomerChange = async () => {
   const customerId = Number(customerSelect.value)
 
@@ -168,17 +235,19 @@ const setSubmitting = (isSubmitting) => {
 const handleSubmit = async (event, role) => {
   event.preventDefault()
 
+  clearFieldErrors(form)
+
+  const validationErrors = validateIncidentCreateForm(role)
+
+  if (validationErrors.length > 0) {
+    showFieldErrors(form, validationErrors)
+
+    focusFirstInvalidField(form, validationErrors)
+
+    return
+  }
+
   const incidentData = buildRequestBody(role)
-
-  if (role === 'admin' && !incidentData.customerId) {
-    showError('Please select a customer')
-    return
-  }
-
-  if (!incidentData.productCode) {
-    showError('Please select a product')
-    return
-  }
 
   setSubmitting(true)
 
@@ -228,6 +297,8 @@ const init = async () => {
     }
 
     form.addEventListener('submit', (event) => handleSubmit(event, role))
+    form.addEventListener('input', handleFieldChange)
+    form.addEventListener('change', handleFieldChange)
   } catch (error) {
     console.error('Unable to initialize incident creation:', error)
 
