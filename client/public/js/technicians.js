@@ -1,47 +1,162 @@
+import { requireRole } from './auth/auth-guard.js'
 import { API_ROUTES } from './constants/routes.js'
 import { apiRequest } from './utils/api.js'
 import { confirmDelete } from './utils/confirmation.js'
-import { setFlashNotification, showFlashNotification } from './utils/notification.js'
+import {
+  setFlashNotification,
+  showError,
+  showFlashNotification
+} from './utils/notification.js'
 
-const deleteButtons = document.querySelectorAll('.technician-delete-button')
+const tableBody =
+  document.querySelector('#technicians-table-body')
 
-const handleDeleteTechnician = async (event) => {
-  const deleteButton = event.currentTarget
+const errorElement =
+  document.querySelector('#technicians-error')
 
-  const technicianId = deleteButton.dataset.technicianId
+const renderTechnicians = (technicians) => {
+  tableBody.replaceChildren()
 
-  const confirmed = await confirmDelete({ itemLabel: 'Technician' })
+  for (const technician of technicians) {
+    const row = document.createElement('tr')
+
+    const firstNameCell = document.createElement('td')
+    firstNameCell.textContent = technician.firstName
+
+    const lastNameCell = document.createElement('td')
+    lastNameCell.textContent = technician.lastName
+
+    const emailCell = document.createElement('td')
+    emailCell.textContent = technician.user?.email ?? ''
+
+    const phoneCell = document.createElement('td')
+    phoneCell.textContent = technician.phone
+
+    const statusCell = document.createElement('td')
+    statusCell.textContent =
+      technician.user?.isActive
+        ? 'Active'
+        : 'Inactive'
+
+    const actionCell = document.createElement('td')
+    const buttonGroup = document.createElement('div')
+    buttonGroup.classList.add('button-group')
+
+    const editLink = document.createElement('a')
+    editLink.classList.add('btn', 'btn-primary')
+    editLink.href =
+      `/technicians/${technician.techId}/edit`
+    editLink.textContent = 'Edit'
+
+    const deactivateButton =
+      document.createElement('button')
+
+    deactivateButton.type = 'button'
+    deactivateButton.classList.add(
+      'btn',
+      'btn-danger'
+    )
+    deactivateButton.textContent = 'Deactivate'
+    deactivateButton.dataset.technicianId =
+      technician.techId
+
+    if (!technician.user?.isActive) {
+      deactivateButton.disabled = true
+      deactivateButton.textContent = 'Inactive'
+    }
+
+    deactivateButton.addEventListener(
+      'click',
+      handleDeactivateTechnician
+    )
+
+    buttonGroup.append(
+      editLink,
+      deactivateButton
+    )
+
+    actionCell.appendChild(buttonGroup)
+
+    row.append(
+      firstNameCell,
+      lastNameCell,
+      emailCell,
+      phoneCell,
+      statusCell,
+      actionCell
+    )
+
+    tableBody.appendChild(row)
+  }
+}
+
+const loadTechnicians = async () => {
+  const result = await apiRequest(
+    API_ROUTES.TECHNICIANS,
+    {},
+    'Failed to load technicians'
+  )
+
+  renderTechnicians(result.data)
+}
+
+const handleDeactivateTechnician = async (event) => {
+  const button = event.currentTarget
+  const technicianId = button.dataset.technicianId
+
+  const confirmed = await confirmDelete({
+    itemLabel: 'Technician'
+  })
 
   if (!confirmed) {
     return
   }
 
   try {
-    deleteButton.disabled = true
+    button.disabled = true
 
-    const result = await apiRequest(
+    await apiRequest(
       `${API_ROUTES.TECHNICIANS}/${technicianId}`,
       {
         method: 'DELETE'
       },
-      'Failed to delete technician'
+      'Failed to deactivate technician'
     )
 
-    const technicianFirstName = result.data.firstName
+    setFlashNotification(
+      'success',
+      'Technician was deactivated successfully!'
+    )
 
-    setFlashNotification('success', `Technician "${technicianFirstName}" was deleted successfully!`)
     window.location.reload()
   } catch (error) {
-    deleteButton.disabled = false
-    console.error('Error deleting technician:', error)
+    button.disabled = false
     showError(error.message)
   }
 }
 
-if (deleteButtons) {
-  deleteButtons.forEach((button) => {
-    button.addEventListener('click', handleDeleteTechnician)
-  })
+const init = async () => {
+  try {
+    const authState = await requireRole('admin')
+
+    if (!authState) {
+      return
+    }
+
+    await loadTechnicians()
+
+    showFlashNotification()
+  } catch (error) {
+    console.error(
+      'Unable to load technicians:',
+      error
+    )
+
+    errorElement.textContent =
+      error.message || 'Unable to load technicians.'
+
+    errorElement.hidden = false
+  }
 }
 
-showFlashNotification()
+init()
