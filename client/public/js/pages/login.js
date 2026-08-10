@@ -1,6 +1,12 @@
 import { redirectAuthenticatedUser } from '../auth/auth-guard.js'
 import { signIn } from '../auth/auth-session.js'
-import { compactValidationErrors, validateEmail, validateRequired } from '../validation/form-validation.js'
+import {
+  compactValidationErrors,
+  keepFirstErrorPerField,
+  validateEmail,
+  validateLength,
+  validateRequired
+} from '../validation/form-validation.js'
 import { clearFieldErrors, focusFirstInvalidField, showFieldErrors } from '../validation/form-errors.js'
 
 const form = document.querySelector('#login-form')
@@ -25,10 +31,16 @@ const setSubmitting = (isSubmitting) => {
 }
 
 const validateLoginForm = () => {
-  return compactValidationErrors([
-    validateEmail('email', emailInput.value, 'Email'),
-    validateRequired('password', passwordInput.value, 'Password')
-  ])
+  return keepFirstErrorPerField(
+    compactValidationErrors([
+      validateEmail('email', emailInput.value, 'Email'),
+      validateLength('email', emailInput.value, {
+        label: 'Email',
+        max: 100
+      }),
+      validateRequired('password', passwordInput.value, 'Password')
+    ])
+  )
 }
 
 const handleSubmit = async (event) => {
